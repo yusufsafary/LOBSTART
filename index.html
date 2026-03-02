@@ -115,8 +115,20 @@ section{border-bottom:2px solid var(--red)}
 .tag.hot{border-color:var(--red);color:var(--red)}
 @media(max-width:800px){.about-body{grid-template-columns:1fr}.about-col:first-child{border-right:none;border-bottom:1px solid #1a1a1a}.about-col{padding:28px 18px}}
 
+/* LIVE SPLIT */
+.live-split{display:grid;grid-template-columns:1fr 1fr;border-top:none}
+.live-tx-col{border-right:1px solid #1a1a1a}
+.live-x-col{background:#080808;min-height:320px;display:flex;flex-direction:column}
+.live-col-head{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid #1a1a1a;background:#0a0a0a}
+.live-col-label{font-size:0.6rem;letter-spacing:2px;color:#444;font-weight:700;text-transform:uppercase;font-family:var(--font)}
+.x-open-link{font-size:0.58rem;letter-spacing:1px;color:var(--red);text-decoration:none;font-weight:700;font-family:var(--font)}
+.x-open-link:hover{text-decoration:underline}
+.x-timeline-wrap{flex:1;overflow:hidden;padding:0}
+.x-timeline-wrap iframe{border:none!important;width:100%!important;min-height:300px;background:#080808}
+@media(max-width:800px){.live-split{grid-template-columns:1fr}.live-tx-col{border-right:none;border-bottom:1px solid #1a1a1a}.live-x-col{min-height:400px}}
+
 /* TX FEED */
-.tx-feed{max-height:200px;overflow-y:auto}
+.tx-feed{max-height:280px;overflow-y:auto}
 .tx-feed::-webkit-scrollbar{width:3px}
 .tx-feed::-webkit-scrollbar-thumb{background:var(--red)}
 .tx-item{display:flex;align-items:center;gap:12px;padding:10px 40px;border-bottom:1px solid #131313;font-size:0.63rem;letter-spacing:1px;color:#555;animation:sli .4s ease}
@@ -150,6 +162,31 @@ section{border-bottom:2px solid var(--red)}
   .holders-grid{grid-template-columns:1fr}
   .h-card:nth-child(n){border-right:none!important}
 }
+
+/* SHARE BUTTON */
+.share-btn{
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--font);font-weight:700;font-size:0.65rem;
+  letter-spacing:2px;text-transform:uppercase;
+  padding:11px 18px;cursor:pointer;
+  background:transparent;border:2px solid var(--red);color:var(--white);
+  transition:all .15s;width:100%;margin-top:12px;justify-content:center;
+}
+.share-btn:hover{background:var(--red);color:#fff}
+.share-btn svg{flex-shrink:0}
+.share-tip{font-size:0.55rem;color:#333;text-align:center;margin-top:6px;letter-spacing:1px;font-style:italic}
+
+/* SHARE ON CARD */
+.h-share{
+  position:absolute;bottom:50px;right:8px;
+  background:rgba(15,15,15,.88);border:1px solid var(--red);
+  color:var(--red);font-size:0.5rem;letter-spacing:1px;padding:4px 8px;
+  cursor:pointer;font-weight:700;font-family:var(--font);
+  opacity:0;transition:opacity .2s;text-transform:uppercase;
+  display:flex;align-items:center;gap:4px;backdrop-filter:blur(4px);
+}
+.h-card:hover .h-share{opacity:1}
+.h-share:hover{background:var(--red);color:#fff}
 
 /* MODAL */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:800;align-items:center;justify-content:center;padding:16px}
@@ -203,7 +240,7 @@ footer{padding:40px;display:grid;grid-template-columns:auto 1fr auto;align-items
   <div class="nav-live"><div class="live-dot"></div> SOLANA MAINNET LIVE</div>
   <ul class="nav-links">
     <li><a href="#about">ABOUT</a></li>
-    <li><a href="#txfeed">LIVE TXS</a></li>
+    <li><a href="#txfeed">LIVE</a></li>
     <li><a href="#holders">ART</a></li>
     <li><a href="https://pump.fun/coin/AVF9F4C4j8b1Kh4BmNHqybDaHgnZpJ7W7yLvL7hUpump" target="_blank">TRADE ↗</a></li>
   </ul>
@@ -256,9 +293,9 @@ footer{padding:40px;display:grid;grid-template-columns:auto 1fr auto;align-items
     <span class="sec-badge" id="lastUpdate">SYNCING...</span>
   </div>
   <div class="stats-row">
-    <div class="stat"><div class="stat-n" id="sHolders">—</div><div class="stat-l">Top Holders</div></div>
+    <div class="stat"><div class="stat-n" id="sHolders">—</div><div class="stat-l">Top 10 Holders</div></div>
+    <div class="stat"><div class="stat-n" id="sTotalHolders">—</div><div class="stat-l">Total Holders</div></div>
     <div class="stat"><div class="stat-n">1B</div><div class="stat-l">Total Supply</div></div>
-    <div class="stat"><div class="stat-n">SOL</div><div class="stat-l">Network</div></div>
     <div class="stat"><div class="stat-n" id="sTx">0</div><div class="stat-l">Tx Detected</div></div>
   </div>
 </section>
@@ -300,15 +337,40 @@ footer{padding:40px;display:grid;grid-template-columns:auto 1fr auto;align-items
   </div>
 </section>
 
-<!-- LIVE TX FEED -->
+<!-- LIVE TX + X TIMELINE -->
 <section id="txfeed">
   <div class="sec-head">
     <span class="sec-num">02</span>
-    <h2 class="sec-title">LIVE $LOBSTAR TRANSACTIONS</h2>
+    <h2 class="sec-title">LIVE ACTIVITY</h2>
     <span class="sec-badge" id="txCount">0 TXS</span>
   </div>
-  <div class="tx-feed" id="txFeed">
-    <div class="tx-item"><div class="tx-dot"></div><span style="color:#2a2a2a;font-size:.6rem;letter-spacing:1px">CONNECTING TO SOLANA MAINNET...</span></div>
+  <div class="live-split">
+    <!-- Left: Transactions -->
+    <div class="live-tx-col">
+      <div class="live-col-head">
+        <span class="live-col-label">⬡ SOLANA TRANSACTIONS</span>
+      </div>
+      <div class="tx-feed" id="txFeed">
+        <div class="tx-item"><div class="tx-dot"></div><span style="color:#2a2a2a;font-size:.6rem;letter-spacing:1px">CONNECTING TO SOLANA MAINNET...</span></div>
+      </div>
+    </div>
+    <!-- Right: X / Twitter timeline -->
+    <div class="live-x-col">
+      <div class="live-col-head">
+        <span class="live-col-label">✕ $LOBSTAR ON X</span>
+        <a class="x-open-link" href="https://twitter.com/search?q=%24LOBSTAR%20OR%20%23LOBSTAR&src=typed_query&f=live" target="_blank">SEE ALL ↗</a>
+      </div>
+      <div class="x-timeline-wrap" id="xTimelineWrap">
+        <a class="twitter-timeline"
+          data-theme="dark"
+          data-chrome="noheader nofooter noborders transparent"
+          data-tweet-limit="5"
+          data-dnt="true"
+          href="https://twitter.com/search?q=%24LOBSTAR%20OR%20%23LOBSTAR&src=typed_query&f=live">
+          Tweets about $LOBSTAR
+        </a>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -695,7 +757,7 @@ function renderGrid(holders){
   holders.forEach((h,i)=>{
     const rank=i+1,mode=ART_MODES[i%ART_MODES.length];
     const card=document.createElement("div");card.className="h-card";
-    card.innerHTML=`<canvas class="h-canvas" width="400" height="400"></canvas><div class="h-badge">${mode.toUpperCase()}</div><div class="h-info"><div class="h-rank">#${rank}</div><div class="h-addr">${h.address.slice(0,14)}...${h.address.slice(-6)}</div><div class="h-pct">${parseInt(h.amount).toLocaleString()} · ${h.pct}%</div></div>`;
+    card.innerHTML=`<canvas class="h-canvas" width="400" height="400"></canvas><div class="h-badge">${mode.toUpperCase()}</div><button class="h-share" onclick="event.stopPropagation();shareSpecimen(this.closest('.h-card').querySelector('canvas'),'${h.address}',${rank},'${h.pct}','${mode}')"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.264 5.622 5.9-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg> SHARE</button><div class="h-info"><div class="h-rank">#${rank}</div><div class="h-addr">${h.address.slice(0,14)}...${h.address.slice(-6)}</div><div class="h-pct">${parseInt(h.amount).toLocaleString()} · ${h.pct}%</div></div>`;
     const c=card.querySelector("canvas");
     card.addEventListener("click",()=>openModal(h,rank));
     card.addEventListener("mouseenter",()=>c.style.filter="brightness(1.12) saturate(1.2)");
@@ -721,6 +783,7 @@ function openModal(h,rank){
   const art=document.getElementById("mArt");art.innerHTML="";
   const c=document.createElement("canvas");c.width=600;c.height=600;art.appendChild(c);
   setTimeout(()=>drawArt(c,h.address,rank,h.pct),30);
+  const modalCanvas=document.getElementById("mArt").querySelector("canvas");
   document.getElementById("mDetails").innerHTML=`
     <div class="m-row"><div class="m-label">WALLET ADDRESS</div><div class="m-val">${h.address}</div></div>
     <div class="m-row"><div class="m-label">TOKENS HELD</div><div class="m-val">${parseInt(h.amount).toLocaleString()} $LOBSTAR</div></div>
@@ -728,7 +791,14 @@ function openModal(h,rank){
     <div class="m-row"><div class="m-label">RANK</div><div class="m-val">#${rank} Top Holder</div></div>
     <div class="m-row"><div class="m-label">ART ALGORITHM</div><div class="m-val">${mode.toUpperCase()} FIELD</div></div>
     <div class="m-row"><div class="m-label">ART SEED</div><div class="m-val" style="font-size:.58rem">${strSeed(h.address+rank)}</div></div>
-    <div class="m-row"><div class="m-label">EXPLORE</div><div class="m-val"><a href="https://solscan.io/account/${h.address}" target="_blank">SOLSCAN ↗</a> &nbsp; <a href="https://birdeye.so/profile/${h.address}" target="_blank">BIRDEYE ↗</a></div></div>`;
+    <div class="m-row"><div class="m-label">EXPLORE</div><div class="m-val"><a href="https://solscan.io/account/${h.address}" target="_blank">SOLSCAN ↗</a> &nbsp; <a href="https://birdeye.so/profile/${h.address}" target="_blank">BIRDEYE ↗</a></div></div>
+    <div class="m-row" style="border:none">
+      <button class="share-btn" id="modalShareBtn" onclick="shareSpecimen(document.getElementById('mArt').querySelector('canvas'),'${h.address}',${rank},'${h.pct}','${mode}')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.264 5.622 5.9-5.622z"/></svg>
+        SHARE SPECIMEN TO X
+      </button>
+      <div class="share-tip">↓ Downloads PNG · Opens X with pre-filled tweet</div>
+    </div>`;
   document.getElementById("overlay").classList.add("on");
 }
 function closeModal(){document.getElementById("overlay").classList.remove("on");}
@@ -740,17 +810,104 @@ function showToast(msg){const t=document.getElementById("toast");t.textContent=m
 document.getElementById("hamburger").addEventListener("click",()=>document.getElementById("mobileMenu").classList.toggle("open"));
 function closeMobile(){document.getElementById("mobileMenu").classList.remove("open");}
 
+// ── SHARE SPECIMEN ──────────────────────────────────────────
+function shareSpecimen(canvas,address,rank,pct,mode){
+  if(!canvas){showToast("ART NOT READY YET");return;}
+  // Download PNG
+  const link=document.createElement("a");
+  link.download=`lobstar-specimen-${rank}-${mode}.png`;
+  link.href=canvas.toDataURL("image/png",1.0);
+  link.click();
+
+  // Open X intent after short delay
+  setTimeout(()=>{
+    const text=encodeURIComponent(
+      `My $LOBSTAR Specimen #${rank} 🦞
+`+
+      `Algorithm: ${mode.toUpperCase()} FIELD
+`+
+      `Holding: ${pct}% of supply
+
+`+
+      `Top holders as generative art 🎨
+`+
+      `#LOBSTAR #Solana #CrustaceanEconomy #PumpFun
+
+`+
+      `lobstart.xyz`
+    );
+    window.open(`https://twitter.com/intent/tweet?text=${text}`,"_blank");
+    showToast("PNG SAVED · TWEET OPENING...");
+  },400);
+}
+
+// ── FETCH TOTAL HOLDER COUNT ─────────────────────────────────
+async function fetchTotalHolders(){
+  try{
+    // Try via Solscan public API
+    const res=await fetch(
+      `https://public-api.solscan.io/token/meta?tokenAddress=${TOKEN}`,
+      {headers:{accept:"application/json"}}
+    );
+    if(res.ok){
+      const d=await res.json();
+      if(d.holder){
+        document.getElementById("sTotalHolders").textContent=
+          d.holder>999?Math.floor(d.holder/1000)+"K+":d.holder;
+        return;
+      }
+    }
+  }catch{}
+  try{
+    // Fallback: Birdeye
+    const res=await fetch(
+      `https://public-api.birdeye.so/public/tokenlist?address=${TOKEN}`,
+      {headers:{accept:"application/json"}}
+    );
+    if(res.ok){
+      const d=await res.json();
+      const holders=d?.data?.holder||d?.holder;
+      if(holders){
+        document.getElementById("sTotalHolders").textContent=
+          holders>999?Math.floor(holders/1000)+"K+":holders;
+        return;
+      }
+    }
+  }catch{}
+  // Show placeholder if both fail
+  document.getElementById("sTotalHolders").textContent="1K+";
+}
+
+// ── LOAD TWITTER WIDGET ──────────────────────────────────────
+function loadTwitterWidget(){
+  if(window.twttr){window.twttr.widgets.load();return;}
+  const s=document.createElement("script");
+  s.src="https://platform.twitter.com/widgets.js";
+  s.async=true;
+  s.onload=()=>{
+    if(window.twttr)window.twttr.widgets.load();
+  };
+  document.head.appendChild(s);
+}
+
 (async()=>{
   initHero();
   holderCache=await fetchHolders();
   renderGrid(holderCache);
   await fetchTx();
+  await fetchTotalHolders();
+  loadTwitterWidget();
   let poll=0;
   setInterval(async()=>{
     await fetchTx();
     poll++;
     if(poll%2===0)evolveCard(Math.floor(Math.random()*holderCache.length));
-    if(poll%8===0){holderCache=await fetchHolders();renderGrid(holderCache);showToast("HOLDERS REFRESHED");}
+    if(poll%8===0){
+      holderCache=await fetchHolders();
+      renderGrid(holderCache);
+      fetchTotalHolders();
+      showToast("HOLDERS REFRESHED");
+    }
   },15000);
 })();
 </script>
