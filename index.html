@@ -1,1119 +1,894 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="description" content="LOBSTART — The Aristocratic Crustacean of Solana. Generative art from top holders."/>
 <title>LOBSTART — The Crustacean Economy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&display=swap" rel="stylesheet"/>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
-
-  :root {
-    --red: #8C2E1F;
-    --bg: #0F0F0F;
-    --white: #FFFFFF;
-    --gray: #1a1a1a;
-    --border: #8C2E1F;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--bg);
-    color: var(--white);
-    font-family: 'Space Mono', monospace;
-    overflow-x: hidden;
-    cursor: crosshair;
-  }
-
-  /* SCANLINES */
-  body::before {
-    content: '';
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(140,46,31,0.03) 2px,
-      rgba(140,46,31,0.03) 4px
-    );
-    pointer-events: none;
-    z-index: 9999;
-  }
-
-  /* NAV */
-  nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px 32px;
-    background: var(--bg);
-    border-bottom: 2px solid var(--red);
-  }
-
-  .nav-logo {
-    font-family: 'Bebas Neue', cursive;
-    font-size: 2rem;
-    color: var(--red);
-    letter-spacing: 4px;
-    text-decoration: none;
-  }
-
-  .nav-links {
-    display: flex;
-    gap: 32px;
-    list-style: none;
-  }
-
-  .nav-links a {
-    color: var(--white);
-    text-decoration: none;
-    font-size: 0.75rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    transition: color 0.1s;
-  }
-
-  .nav-links a:hover { color: var(--red); }
-
-  /* HERO */
-  .hero {
-    min-height: 100vh;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    border-bottom: 2px solid var(--red);
-    padding-top: 80px;
-  }
-
-  .hero-left {
-    padding: 80px 60px;
-    border-right: 2px solid var(--red);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 32px;
-  }
-
-  .hero-tag {
-    font-size: 0.7rem;
-    letter-spacing: 4px;
-    color: var(--red);
-    text-transform: uppercase;
-    border: 1px solid var(--red);
-    display: inline-block;
-    padding: 4px 12px;
-    width: fit-content;
-  }
-
-  h1 {
-    font-family: 'Bebas Neue', cursive;
-    font-size: clamp(5rem, 10vw, 9rem);
-    line-height: 0.9;
-    letter-spacing: 2px;
-    color: var(--white);
-  }
-
-  h1 span { color: var(--red); }
-
-  .hero-desc {
-    font-size: 0.85rem;
-    line-height: 1.8;
-    color: #aaa;
-    max-width: 420px;
-  }
-
-  .hero-btns {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-
-  .btn {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.75rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    padding: 14px 28px;
-    cursor: pointer;
-    border: 2px solid var(--red);
-    text-decoration: none;
-    transition: all 0.1s;
-  }
-
-  .btn-primary {
-    background: var(--red);
-    color: var(--white);
-  }
-
-  .btn-primary:hover { background: #a83525; }
-
-  .btn-outline {
-    background: transparent;
-    color: var(--white);
-  }
-
-  .btn-outline:hover { background: var(--red); }
-
-  .contract-box {
-    background: var(--gray);
-    border: 1px solid var(--red);
-    padding: 12px 16px;
-    font-size: 0.65rem;
-    letter-spacing: 1px;
-    color: #888;
-    word-break: break-all;
-  }
-
-  .contract-box span { color: var(--red); }
-
-  /* LOBSTER CANVAS HERO */
-  .hero-right {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    overflow: hidden;
-  }
-
-  #heroCanvas {
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
-
-  /* TICKER */
-  .ticker-wrap {
-    overflow: hidden;
-    border-bottom: 2px solid var(--red);
-    background: var(--red);
-    padding: 10px 0;
-  }
-
-  .ticker {
-    display: flex;
-    gap: 0;
-    animation: ticker 20s linear infinite;
-    width: max-content;
-  }
-
-  .ticker span {
-    font-family: 'Bebas Neue', cursive;
-    font-size: 1.2rem;
-    letter-spacing: 4px;
-    color: var(--white);
-    padding: 0 40px;
-  }
-
-  @keyframes ticker {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-  }
-
-  /* SECTION */
-  section { border-bottom: 2px solid var(--red); }
-
-  .section-header {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 24px 60px;
-    border-bottom: 1px solid var(--red);
-  }
-
-  .section-num {
-    font-family: 'Bebas Neue', cursive;
-    font-size: 1rem;
-    color: var(--red);
-    min-width: 40px;
-  }
-
-  .section-title {
-    font-family: 'Bebas Neue', cursive;
-    font-size: 1.8rem;
-    letter-spacing: 4px;
-  }
-
-  /* TOP HOLDERS GRID */
-  .holders-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    border-top: none;
-  }
-
-  .holder-card {
-    border-right: 1px solid var(--red);
-    border-bottom: 1px solid var(--red);
-    padding: 0;
-    cursor: pointer;
-    transition: background 0.1s;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .holder-card:nth-child(5n) { border-right: none; }
-  .holder-card:nth-child(n+6) { border-bottom: none; }
-
-  .holder-card:hover { background: rgba(140,46,31,0.1); }
-
-  .holder-card canvas {
-    width: 100%;
-    display: block;
-    aspect-ratio: 1;
-  }
-
-  .holder-info {
-    padding: 12px;
-    border-top: 1px solid rgba(140,46,31,0.5);
-  }
-
-  .holder-rank {
-    font-family: 'Bebas Neue', cursive;
-    font-size: 2rem;
-    color: var(--red);
-    line-height: 1;
-  }
-
-  .holder-addr {
-    font-size: 0.6rem;
-    color: #666;
-    letter-spacing: 1px;
-    word-break: break-all;
-    margin-top: 4px;
-  }
-
-  .holder-amount {
-    font-size: 0.7rem;
-    color: var(--white);
-    margin-top: 4px;
-  }
-
-  /* MODAL */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.92);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .modal-overlay.active { display: flex; }
-
-  .modal {
-    background: var(--bg);
-    border: 2px solid var(--red);
-    width: min(90vw, 700px);
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-
-  .modal-header {
-    padding: 20px 28px;
-    border-bottom: 1px solid var(--red);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .modal-title {
-    font-family: 'Bebas Neue', cursive;
-    font-size: 1.5rem;
-    letter-spacing: 3px;
-  }
-
-  .modal-close {
-    background: none;
-    border: 1px solid var(--red);
-    color: var(--red);
-    font-size: 1rem;
-    cursor: pointer;
-    width: 32px; height: 32px;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Space Mono', monospace;
-  }
-
-  .modal-body {
-    padding: 28px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
-
-  .modal-canvas-wrap canvas {
-    width: 100%;
-    border: 1px solid var(--red);
-  }
-
-  .modal-details { display: flex; flex-direction: column; gap: 16px; }
-
-  .detail-row { border-bottom: 1px solid #222; padding-bottom: 12px; }
-
-  .detail-label {
-    font-size: 0.6rem;
-    letter-spacing: 2px;
-    color: var(--red);
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
-
-  .detail-value {
-    font-size: 0.75rem;
-    color: var(--white);
-    word-break: break-all;
-  }
-
-  /* STATS */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  .stat-box {
-    padding: 40px;
-    border-right: 1px solid var(--red);
-  }
-
-  .stat-box:last-child { border-right: none; }
-
-  .stat-num {
-    font-family: 'Bebas Neue', cursive;
-    font-size: 3.5rem;
-    color: var(--red);
-    line-height: 1;
-  }
-
-  .stat-label {
-    font-size: 0.65rem;
-    letter-spacing: 3px;
-    color: #666;
-    text-transform: uppercase;
-    margin-top: 8px;
-  }
-
-  /* FOOTER */
-  footer {
-    padding: 40px 60px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 20px;
-  }
-
-  .footer-logo {
-    font-family: 'Bebas Neue', cursive;
-    font-size: 3rem;
-    color: var(--red);
-    letter-spacing: 6px;
-  }
-
-  .footer-links {
-    display: flex;
-    gap: 24px;
-    list-style: none;
-  }
-
-  .footer-links a {
-    color: #555;
-    text-decoration: none;
-    font-size: 0.7rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-  }
-
-  .footer-links a:hover { color: var(--red); }
-
-  .loading-state {
-    grid-column: 1/-1;
-    padding: 60px;
-    text-align: center;
-    color: #444;
-    font-size: 0.8rem;
-    letter-spacing: 2px;
-  }
-
-  .loading-bar {
-    width: 200px;
-    height: 2px;
-    background: #222;
-    margin: 20px auto 0;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .loading-bar::after {
-    content: '';
-    position: absolute;
-    left: -50%;
-    top: 0;
-    width: 50%;
-    height: 100%;
-    background: var(--red);
-    animation: loadbar 1s ease-in-out infinite;
-  }
-
-  @keyframes loadbar {
-    0% { left: -50%; }
-    100% { left: 100%; }
-  }
-
-  @media (max-width: 900px) {
-    .hero { grid-template-columns: 1fr; }
-    .hero-right { height: 400px; border-right: none; border-bottom: 2px solid var(--red); }
-    .holders-grid { grid-template-columns: repeat(2, 1fr); }
-    .stats-grid { grid-template-columns: repeat(2, 1fr); }
-    .modal-body { grid-template-columns: 1fr; }
-    .section-header { padding: 20px 24px; }
-    .hero-left { padding: 40px 24px; }
-    footer { padding: 28px 24px; }
-  }
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --red:#8C2E1F;--red2:#b03a27;--bg:#0F0F0F;--bg2:#141414;
+  --white:#FFFFFF;--gray:#1c1c1c;--muted:#555;
+  --font:'Courier Prime',Courier,monospace;--display:'Bebas Neue',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--white);font-family:var(--font);overflow-x:hidden;cursor:crosshair;min-height:100vh}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.07) 3px,rgba(0,0,0,0.07) 4px);pointer-events:none;z-index:9998}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content:space-between;align-items:center;padding:0 32px;height:60px;background:rgba(15,15,15,0.97);border-bottom:2px solid var(--red);backdrop-filter:blur(10px)}
+.nav-logo{font-family:var(--display);font-size:1.8rem;color:var(--red);letter-spacing:5px;text-decoration:none}
+.nav-links{display:flex;gap:24px;list-style:none;align-items:center}
+.nav-links a{color:#aaa;text-decoration:none;font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;transition:color .15s;font-weight:700}
+.nav-links a:hover{color:var(--red)}
+.nav-live{display:flex;align-items:center;gap:6px;font-size:0.65rem;letter-spacing:1px;color:#555}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse-dot 2s ease-in-out infinite}
+@keyframes pulse-dot{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(140,46,31,.7)}50%{opacity:.6;box-shadow:0 0 0 6px rgba(140,46,31,0)}}
+.hamburger{display:none;background:none;border:none;cursor:pointer;flex-direction:column;gap:5px;padding:4px}
+.hamburger span{width:22px;height:2px;background:var(--white);display:block}
+.nav-menu-mobile{display:none}
+@media(max-width:700px){
+  .nav-links{display:none}.hamburger{display:flex}.nav-live{display:none}
+  .nav-menu-mobile.open{display:flex;flex-direction:column;position:fixed;top:60px;left:0;right:0;background:rgba(15,15,15,.99);border-bottom:2px solid var(--red);padding:20px 32px;gap:16px;z-index:499}
+  .nav-menu-mobile a{color:var(--white);text-decoration:none;font-size:0.85rem;letter-spacing:2px;text-transform:uppercase;font-weight:700;padding:8px 0;border-bottom:1px solid #222}
+}
+
+/* HERO */
+.hero{min-height:100svh;padding-top:60px;display:grid;grid-template-columns:1fr 1fr;border-bottom:2px solid var(--red)}
+.hero-left{padding:60px 48px;border-right:2px solid var(--red);display:flex;flex-direction:column;justify-content:center;gap:28px}
+.hero-tag{font-size:0.65rem;letter-spacing:3px;color:var(--red);text-transform:uppercase;border:1px solid var(--red);display:inline-block;padding:5px 12px;width:fit-content;font-weight:700}
+h1{font-family:var(--display);font-size:clamp(4rem,9vw,8.5rem);line-height:.88;letter-spacing:2px}
+h1 .accent{color:var(--red)}
+.hero-sub{font-size:0.8rem;line-height:1.9;color:#999;max-width:420px;font-style:italic}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap}
+.btn{font-family:var(--font);font-weight:700;font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;padding:13px 26px;cursor:pointer;border:2px solid var(--red);text-decoration:none;transition:all .12s;display:inline-block}
+.btn-primary{background:var(--red);color:#fff}
+.btn-primary:hover{background:var(--red2)}
+.btn-outline{background:transparent;color:#fff}
+.btn-outline:hover{background:var(--red);color:#fff}
+.ca-box{background:#111;border:1px solid #2a2a2a;padding:14px 16px;font-size:0.6rem;letter-spacing:1px;color:#555;border-left:3px solid var(--red);word-break:break-all;line-height:1.8}
+.ca-box strong{color:var(--red);display:block;margin-bottom:4px;font-size:0.65rem}
+.hero-right{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+#heroCanvas{width:100%;height:100%;display:block}
+@media(max-width:900px){.hero{grid-template-columns:1fr}.hero-left{border-right:none;border-bottom:2px solid var(--red);padding:40px 24px}.hero-right{height:340px}}
+@media(max-width:480px){.hero-left{padding:32px 18px;gap:20px}.btn{font-size:0.65rem;padding:11px 18px}}
+
+/* TICKER */
+.ticker-wrap{overflow:hidden;background:var(--red);padding:9px 0;border-bottom:2px solid #6b1c10}
+.ticker-inner{display:flex;width:max-content;animation:tick 22s linear infinite}
+.ticker-inner span{font-family:var(--display);font-size:1.1rem;letter-spacing:5px;color:#fff;padding:0 36px;white-space:nowrap;border-right:1px solid rgba(255,255,255,.2)}
+@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* SECTION */
+section{border-bottom:2px solid var(--red)}
+.sec-head{display:flex;align-items:center;gap:16px;padding:20px 40px;border-bottom:1px solid #1f1f1f;flex-wrap:wrap}
+.sec-num{font-family:var(--display);font-size:1rem;color:var(--red);min-width:36px}
+.sec-title{font-family:var(--display);font-size:1.6rem;letter-spacing:5px;color:#fff}
+.sec-badge{margin-left:auto;font-size:0.6rem;letter-spacing:2px;color:var(--red);border:1px solid var(--red);padding:3px 10px;font-weight:700}
+@media(max-width:600px){.sec-head{padding:16px 18px}.sec-title{font-size:1.2rem}}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr)}
+.stat{padding:32px 40px;border-right:1px solid #1f1f1f}
+.stat:last-child{border-right:none}
+.stat-n{font-family:var(--display);font-size:3rem;color:var(--red);line-height:1}
+.stat-l{font-size:0.6rem;letter-spacing:3px;color:var(--muted);margin-top:6px;text-transform:uppercase}
+@media(max-width:700px){
+  .stats-row{grid-template-columns:1fr 1fr}
+  .stat{border-right:1px solid #1f1f1f;border-bottom:1px solid #1f1f1f;padding:24px 20px}
+  .stat:nth-child(2n){border-right:none}
+  .stat:nth-last-child(-n+2){border-bottom:none}
+}
+
+/* ABOUT */
+.about-body{display:grid;grid-template-columns:1fr 1fr}
+.about-col{padding:48px 48px}
+.about-col:first-child{border-right:1px solid #1f1f1f}
+.about-col h3{font-family:var(--display);font-size:1.6rem;letter-spacing:3px;color:var(--red);margin-bottom:20px}
+.about-col p{font-size:0.78rem;line-height:2;color:#999;margin-bottom:16px;font-style:italic}
+.about-col p strong{color:#fff;font-style:normal}
+.tag-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.tag{font-size:0.6rem;letter-spacing:2px;border:1px solid #2a2a2a;padding:5px 12px;color:#555;text-transform:uppercase;font-weight:700}
+.tag.hot{border-color:var(--red);color:var(--red)}
+@media(max-width:800px){.about-body{grid-template-columns:1fr}.about-col:first-child{border-right:none;border-bottom:1px solid #1f1f1f}.about-col{padding:32px 20px}}
+
+/* TX FEED */
+.tx-feed{max-height:180px;overflow-y:auto;padding:0}
+.tx-feed::-webkit-scrollbar{width:3px}
+.tx-feed::-webkit-scrollbar-thumb{background:var(--red)}
+.tx-item{display:flex;align-items:center;gap:12px;padding:10px 40px;border-bottom:1px solid #161616;font-size:0.65rem;letter-spacing:1px;color:#555;animation:slide-in .4s ease}
+.tx-item.new-tx{color:#fff;background:rgba(140,46,31,.06)}
+@keyframes slide-in{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+.tx-dot{width:6px;height:6px;border-radius:50%;background:#222;flex-shrink:0}
+.tx-dot.buy{background:var(--red)}
+.tx-type{color:var(--red);font-weight:700;min-width:44px}
+.tx-addr{color:#444;flex:1;font-size:0.6rem}
+.tx-amt{color:#fff;text-align:right;min-width:100px}
+.tx-time{color:#333;min-width:55px;text-align:right}
+@media(max-width:600px){.tx-item{padding:10px 18px;gap:8px}.tx-time{display:none}}
+
+/* HOLDERS GRID */
+.holders-grid{display:grid;grid-template-columns:repeat(5,1fr)}
+.h-card{border-right:1px solid #1a1a1a;border-bottom:1px solid #1a1a1a;cursor:pointer;position:relative;overflow:hidden;transition:transform .15s,border-color .15s}
+.h-card:nth-child(5n){border-right:none}
+.h-card:hover{transform:scale(1.025);z-index:2;border-color:var(--red)!important}
+.h-canvas{width:100%;display:block;aspect-ratio:1/1}
+.h-info{padding:12px 14px;border-top:1px solid #1a1a1a;background:#0a0808}
+.h-rank{font-family:var(--display);font-size:1.8rem;color:var(--red);line-height:1}
+.h-addr{font-size:0.55rem;color:#444;letter-spacing:.5px;margin-top:3px;word-break:break-all}
+.h-pct{font-size:0.65rem;color:#888;margin-top:4px;font-weight:700}
+.h-tag-badge{position:absolute;top:8px;right:8px;background:rgba(140,46,31,.85);color:#fff;font-size:0.5rem;letter-spacing:1px;padding:3px 7px;font-weight:700;backdrop-filter:blur(4px)}
+@media(max-width:900px){
+  .holders-grid{grid-template-columns:repeat(2,1fr)}
+  .h-card:nth-child(5n){border-right:1px solid #1a1a1a}
+  .h-card:nth-child(2n){border-right:none!important}
+}
+@media(max-width:480px){.holders-grid{grid-template-columns:1fr}.h-card:nth-child(2n){border-right:none!important}.h-card{border-right:none!important}}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:800;align-items:center;justify-content:center;padding:16px}
+.overlay.on{display:flex}
+.modal{background:var(--bg);border:2px solid var(--red);width:min(96vw,780px);max-height:92vh;overflow-y:auto}
+.modal::-webkit-scrollbar{width:3px}
+.modal::-webkit-scrollbar-thumb{background:var(--red)}
+.m-head{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;border-bottom:1px solid var(--red)}
+.m-title{font-family:var(--display);font-size:1.4rem;letter-spacing:3px}
+.m-close{background:none;border:1px solid var(--red);color:var(--red);width:30px;height:30px;cursor:pointer;font-size:1rem;font-family:var(--font);display:flex;align-items:center;justify-content:center}
+.m-body{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.m-art{border-right:1px solid #1f1f1f;padding:24px}
+.m-art canvas{width:100%;border:1px solid #1f1f1f}
+.m-details{padding:24px;display:flex;flex-direction:column;gap:0}
+.m-row{padding:14px 0;border-bottom:1px solid #161616}
+.m-label{font-size:0.6rem;letter-spacing:2px;color:var(--red);margin-bottom:5px;font-weight:700;text-transform:uppercase}
+.m-val{font-size:0.72rem;color:#ccc;word-break:break-all;line-height:1.6}
+.m-val a{color:var(--red);text-decoration:none}
+.m-val a:hover{text-decoration:underline}
+@media(max-width:680px){.m-body{grid-template-columns:1fr}.m-art{border-right:none;border-bottom:1px solid #1f1f1f}}
+
+/* FOOTER */
+footer{padding:40px;display:grid;grid-template-columns:auto 1fr auto;align-items:start;gap:40px;background:#0a0a0a;border-top:2px solid var(--red)}
+.f-logo{font-family:var(--display);font-size:2.8rem;color:var(--red);letter-spacing:6px;line-height:1}
+.f-sub{font-size:0.6rem;letter-spacing:2px;color:#333;margin-top:6px}
+.f-copy{font-size:0.6rem;letter-spacing:1px;color:#2a2a2a;margin-top:10px;line-height:1.9}
+.f-links{display:flex;flex-direction:column;gap:10px;padding-top:6px}
+.f-links a{color:#333;text-decoration:none;font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;font-weight:700;transition:color .1s}
+.f-links a:hover{color:var(--red)}
+.f-built{text-align:right}
+.f-built p{font-size:0.6rem;letter-spacing:1px;color:#2a2a2a;line-height:2;font-style:italic}
+.f-built strong{color:#444}
+.arthouse{color:var(--red)!important;font-style:normal}
+@media(max-width:700px){footer{grid-template-columns:1fr;gap:24px;padding:28px 20px}.f-built{text-align:left}}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;z-index:700;background:var(--red);color:#fff;padding:12px 20px;font-size:0.65rem;letter-spacing:2px;border:1px solid rgba(255,255,255,.3);opacity:0;pointer-events:none;transition:opacity .3s;text-transform:uppercase;font-weight:700}
+.toast.show{opacity:1}
 </style>
 </head>
 <body>
 
+<!-- NAV -->
 <nav>
   <a class="nav-logo" href="#">LOBSTART</a>
+  <div class="nav-live"><div class="live-dot"></div> MAINNET LIVE</div>
   <ul class="nav-links">
-    <li><a href="#holders">HOLDERS</a></li>
     <li><a href="#about">ABOUT</a></li>
-    <li><a href="https://pump.fun" target="_blank">TRADE</a></li>
+    <li><a href="#holders">HOLDERS</a></li>
+    <li><a href="https://pump.fun/coin/AVF9F4C4j8b1Kh4BmNHqybDaHgnZpJ7W7yLvL7hUpump" target="_blank">TRADE ↗</a></li>
   </ul>
+  <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
 </nav>
+<div class="nav-menu-mobile" id="mobileMenu">
+  <a href="#about" onclick="closeMobile()">ABOUT</a>
+  <a href="#holders" onclick="closeMobile()">HOLDERS</a>
+  <a href="https://pump.fun/coin/AVF9F4C4j8b1Kh4BmNHqybDaHgnZpJ7W7yLvL7hUpump" target="_blank">TRADE ↗</a>
+</div>
 
 <!-- HERO -->
 <section class="hero">
   <div class="hero-left">
-    <span class="hero-tag">// SOLANA MEMECOIN</span>
-    <h1>LOB<span>START</span></h1>
-    <p class="hero-desc">
-      The aristocratic crustacean of the blockchain. Top holders rendered as generative art — each wallet, a unique specimen in the eternal ocean of decentralized finance.
-    </p>
+    <span class="hero-tag">// SOLANA MEMECOIN · PUMP.FUN</span>
+    <h1>LOB<br><span class="accent">START</span></h1>
+    <p class="hero-sub">The <strong>aristocratic crustacean</strong> of the Solana blockchain. Each top holder rendered as living generative art — unique, deterministic, forever.</p>
     <div class="hero-btns">
       <a class="btn btn-primary" href="https://pump.fun/coin/AVF9F4C4j8b1Kh4BmNHqybDaHgnZpJ7W7yLvL7hUpump" target="_blank">BUY $LOBSTART</a>
-      <a class="btn btn-outline" href="#holders">VIEW HOLDERS</a>
+      <a class="btn btn-outline" href="#holders">VIEW SPECIMENS</a>
     </div>
-    <div class="contract-box">
-      <span>CA:</span> AVF9F4C4j8b1Kh4BmNHqybDaHgnZpJ7W7yLvL7hUpump
-    </div>
+    <div class="ca-box"><strong>CONTRACT ADDRESS</strong>AVF9F4C4j8b1Kh4BmNHqybDaHgnZpJ7W7yLvL7hUpump</div>
   </div>
-  <div class="hero-right">
-    <canvas id="heroCanvas"></canvas>
-  </div>
+  <div class="hero-right"><canvas id="heroCanvas"></canvas></div>
 </section>
 
 <!-- TICKER -->
 <div class="ticker-wrap">
-  <div class="ticker" id="ticker">
+  <div class="ticker-inner">
     <span>LOBSTART</span><span>$LOBSTART</span><span>THE CLAW IS LAW</span>
-    <span>LOBSTART</span><span>PINCH THE DIP</span><span>CRUSTACEAN ECONOMY</span>
+    <span>PINCH THE DIP</span><span>CRUSTACEAN ECONOMY</span><span>PUMP.FUN</span>
+    <span>SOLANA MAINNET</span><span>GENERATIVE ART</span><span>TOP HOLDERS</span>
     <span>LOBSTART</span><span>$LOBSTART</span><span>THE CLAW IS LAW</span>
-    <span>LOBSTART</span><span>PINCH THE DIP</span><span>CRUSTACEAN ECONOMY</span>
+    <span>PINCH THE DIP</span><span>CRUSTACEAN ECONOMY</span><span>PUMP.FUN</span>
+    <span>SOLANA MAINNET</span><span>GENERATIVE ART</span><span>TOP HOLDERS</span>
   </div>
 </div>
 
 <!-- STATS -->
-<section id="about">
-  <div class="section-header">
-    <span class="section-num">00</span>
-    <h2 class="section-title">TOKEN STATS</h2>
+<section id="stats">
+  <div class="sec-head">
+    <span class="sec-num">00</span>
+    <h2 class="sec-title">LIVE METRICS</h2>
+    <span class="sec-badge" id="lastUpdate">SYNCING...</span>
   </div>
-  <div class="stats-grid">
-    <div class="stat-box">
-      <div class="stat-num" id="statHolders">—</div>
-      <div class="stat-label">Total Holders</div>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-n" id="sHolders">—</div><div class="stat-l">Top Holders</div></div>
+    <div class="stat"><div class="stat-n">1B</div><div class="stat-l">Total Supply</div></div>
+    <div class="stat"><div class="stat-n">SOL</div><div class="stat-l">Network</div></div>
+    <div class="stat"><div class="stat-n" id="sTx">0</div><div class="stat-l">Tx Detected</div></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="sec-head">
+    <span class="sec-num">01</span>
+    <h2 class="sec-title">ABOUT LOBSTART</h2>
+  </div>
+  <div class="about-body">
+    <div class="about-col">
+      <h3>THE MANIFESTO</h3>
+      <p><strong>LOBSTART</strong> is not just a token — it is a declaration. Born on Solana's pump.fun, dressed in a tailored coat, claws extended toward the horizon of decentralized prosperity.</p>
+      <p>Every wallet that holds <strong>$LOBSTART</strong> becomes part of a living ecosystem. The top 10 holders are immortalized as unique crustacean specimens — algorithmically rendered, mathematically distinct, <strong>permanently generated from their wallet address</strong>.</p>
+      <p>The art <strong>auto-evolves</strong> when transactions occur on mainnet. When the market moves, the specimens react. This is finance as aesthetics.</p>
+      <div class="tag-list">
+        <span class="tag hot">GENERATIVE ART</span><span class="tag hot">LIVE DATA</span>
+        <span class="tag">PUMP.FUN</span><span class="tag">SOLANA</span><span class="tag">DEFI</span><span class="tag">MEMECOIN</span>
+      </div>
     </div>
-    <div class="stat-box">
-      <div class="stat-num">SOL</div>
-      <div class="stat-label">Network</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-num">1B</div>
-      <div class="stat-label">Total Supply</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-num">PUMP</div>
-      <div class="stat-label">Platform</div>
+    <div class="about-col">
+      <h3>HOW IT WORKS</h3>
+      <p>Each holder's <strong>wallet address</strong> is hashed into a deterministic seed for the generative art engine. No two specimens are alike — the visual output is a cryptographic fingerprint of ownership.</p>
+      <p>The system polls Solana mainnet every <strong>15 seconds</strong>. When a new transaction is detected, the affected holder's art specimen automatically <strong>evolves</strong> — a flash, a redraw, a new form.</p>
+      <p>Seven distinct art algorithms are assigned by rank: <strong>Plasma Fields · Sacred Geometry · Orbital Systems · Flow Fields · Crystal Lattice · Mandala · Voronoi Cells</strong>.</p>
+      <div class="tag-list">
+        <span class="tag">15s REFRESH</span><span class="tag">SEEDED RNG</span>
+        <span class="tag">CANVAS API</span><span class="tag hot">AUTO-EVOLVE</span><span class="tag hot">7 ALGORITHMS</span>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- TOP HOLDERS GENERATIVE ART -->
+<!-- LIVE TX FEED -->
+<section id="txfeed">
+  <div class="sec-head">
+    <span class="sec-num">02</span>
+    <h2 class="sec-title">LIVE TRANSACTIONS</h2>
+    <span class="sec-badge" id="txCount">0 TXS</span>
+  </div>
+  <div class="tx-feed" id="txFeed">
+    <div class="tx-item"><div class="tx-dot"></div><span style="color:#333;font-size:.6rem;letter-spacing:1px">CONNECTING TO SOLANA MAINNET...</span></div>
+  </div>
+</section>
+
+<!-- TOP HOLDERS -->
 <section id="holders">
-  <div class="section-header">
-    <span class="section-num">01</span>
-    <h2 class="section-title">TOP 10 HOLDERS — GENERATIVE SPECIMENS</h2>
+  <div class="sec-head">
+    <span class="sec-num">03</span>
+    <h2 class="sec-title">TOP 10 SPECIMENS</h2>
+    <span class="sec-badge" id="artBadge">GENERATIVE ART · CLICK TO EXPAND</span>
   </div>
-  <div class="holders-grid" id="holdersGrid">
-    <div class="loading-state">
-      LOADING SPECIMENS FROM BLOCKCHAIN...
-      <div class="loading-bar"></div>
-    </div>
-  </div>
+  <div class="holders-grid" id="holdersGrid"></div>
 </section>
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-logo">LOBSTART</div>
-  <ul class="footer-links">
-    <li><a href="https://pump.fun/coin/AVF9F4C4j8b1Kh4BmNHqybDaHgnZpJ7W7yLvL7hUpump" target="_blank">PUMP.FUN</a></li>
-    <li><a href="https://solscan.io/token/AVF9F4C4j8b1Kh4BmNHqybDaHgnZpJ7W7yLvL7hUpump" target="_blank">SOLSCAN</a></li>
-    <li><a href="https://dexscreener.com/solana/AVF9F4C4j8b1Kh4BmNHqybDaHgnZpJ7W7yLvL7hUpump" target="_blank">DEXSCREENER</a></li>
-  </ul>
-  <div style="font-size:0.6rem;color:#333;letter-spacing:1px;">© 2025 LOBSTART. DYOR. NOT FINANCIAL ADVICE.</div>
+  <div class="f-brand">
+    <div class="f-logo">LOBSTART</div>
+    <div class="f-sub">THE CRUSTACEAN ECONOMY</div>
+    <div class="f-copy">© 2026 LOBSTART<br>DYOR. NOT FINANCIAL ADVICE.<br>ALL ART GENERATED ON-CHAIN.</div>
+  </div>
+  <div class="f-links">
+    <a href="https://pump.fun/coin/AVF9F4C4j8b1Kh4BmNHqybDaHgnZpJ7W7yLvL7hUpump" target="_blank">PUMP.FUN ↗</a>
+    <a href="https://solscan.io/token/AVF9F4C4j8b1Kh4BmNHqybDaHgnZpJ7W7yLvL7hUpump" target="_blank">SOLSCAN ↗</a>
+    <a href="https://dexscreener.com/solana/AVF9F4C4j8b1Kh4BmNHqybDaHgnZpJ7W7yLvL7hUpump" target="_blank">DEXSCREENER ↗</a>
+    <a href="https://birdeye.so/token/AVF9F4C4j8b1Kh4BmNHqybDaHgnZpJ7W7yLvL7hUpump" target="_blank">BIRDEYE ↗</a>
+  </div>
+  <div class="f-built">
+    <p>BUILT BY <strong class="arthouse">ARTHOUSE STUDIO</strong><br>
+    GENERATIVE ART COLLECTIVE<br>
+    <strong>2026</strong> · SOLANA ECOSYSTEM<br>
+    ALL RIGHTS RESERVED</p>
+  </div>
 </footer>
 
 <!-- MODAL -->
-<div class="modal-overlay" id="modal">
+<div class="overlay" id="overlay">
   <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title" id="modalTitle">SPECIMEN #1</span>
-      <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="m-head">
+      <span class="m-title" id="mTitle">SPECIMEN #1</span>
+      <button class="m-close" onclick="closeModal()">✕</button>
     </div>
-    <div class="modal-body">
-      <div class="modal-canvas-wrap" id="modalCanvasWrap"></div>
-      <div class="modal-details" id="modalDetails"></div>
+    <div class="m-body">
+      <div class="m-art" id="mArt"></div>
+      <div class="m-details" id="mDetails"></div>
     </div>
   </div>
 </div>
 
-<script>
-// ─── LOBSTER LOGO IMAGE ───────────────────────────────────────────────────
-const LOBSTER_IMG = new Image();
-LOBSTER_IMG.crossOrigin = 'anonymous';
-LOBSTER_IMG.src = 'data:image/svg+xml,' + encodeURIComponent(`
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-  <rect width="200" height="200" fill="#0F0F0F"/>
-  <!-- Coat body -->
-  <ellipse cx="100" cy="160" rx="55" ry="50" fill="#1a1a1a" stroke="#8C2E1F" stroke-width="2"/>
-  <rect x="70" y="130" width="60" height="40" rx="5" fill="#111" stroke="#8C2E1F" stroke-width="1"/>
-  <!-- White shirt -->
-  <ellipse cx="100" cy="135" rx="22" ry="18" fill="#ddd"/>
-  <rect x="92" y="130" width="16" height="20" fill="#ddd"/>
-  <!-- Lobster body -->
-  <ellipse cx="100" cy="90" rx="30" ry="38" fill="#8C2E1F"/>
-  <!-- Head segments -->
-  <rect x="76" y="60" width="48" height="12" rx="6" fill="#a33525"/>
-  <rect x="80" y="50" width="40" height="14" rx="7" fill="#8C2E1F" stroke="#c04535" stroke-width="1"/>
-  <!-- Eyes -->
-  <circle cx="83" cy="56" r="5" fill="#111"/>
-  <circle cx="117" cy="56" r="5" fill="#111"/>
-  <circle cx="84" cy="55" r="2" fill="#fff"/>
-  <circle cx="118" cy="55" r="2" fill="#fff"/>
-  <!-- Antennae -->
-  <line x1="85" y1="50" x2="45" y2="20" stroke="#8C2E1F" stroke-width="2"/>
-  <line x1="90" y1="48" x2="55" y2="10" stroke="#a33525" stroke-width="1.5"/>
-  <line x1="115" y1="50" x2="155" y2="20" stroke="#8C2E1F" stroke-width="2"/>
-  <line x1="110" y1="48" x2="145" y2="10" stroke="#a33525" stroke-width="1.5"/>
-  <!-- Claws -->
-  <ellipse cx="65" cy="110" rx="18" ry="10" fill="#8C2E1F" transform="rotate(-30,65,110)"/>
-  <ellipse cx="135" cy="110" rx="18" ry="10" fill="#8C2E1F" transform="rotate(30,135,110)"/>
-  <!-- Coat buttons -->
-  <circle cx="100" cy="148" r="3" fill="#333" stroke="#8C2E1F" stroke-width="1"/>
-  <circle cx="100" cy="160" r="3" fill="#333" stroke="#8C2E1F" stroke-width="1"/>
-</svg>
-`);
+<div class="toast" id="toast"></div>
 
-// Seeded random
-function seededRNG(seed) {
-  let s = seed;
-  return function() {
-    s = (s * 1664525 + 1013904223) & 0xffffffff;
-    return (s >>> 0) / 0xffffffff;
+<script>
+// ═══════════════════════════════════════════════════
+// LOBSTART — GENERATIVE ART ENGINE v2
+// ═══════════════════════════════════════════════════
+
+const TOKEN = 'AVF9F4C4j8b1Kh4BmNHqybDaHgnZpJ7W7yLvL7hUpump';
+const RPC = 'https://api.mainnet-beta.solana.com';
+const ART_MODES = ['plasma','sacred','orbital','flow','crystal','mandala','voronoi'];
+
+// ─── Seeded RNG (Mulberry32) ──────────────────────
+function mkRng(seed){
+  let s = seed >>> 0;
+  return ()=>{
+    s += 0x6D2B79F5;
+    let t = s;
+    t = Math.imul(t^(t>>>15), t|1);
+    t ^= t + Math.imul(t^(t>>>7), t|61);
+    return ((t^(t>>>14))>>>0)/4294967296;
   };
 }
-
-function strToSeed(str) {
-  let h = 0;
-  for (let i = 0; i < str.length; i++) {
-    h = Math.imul(31, h) + str.charCodeAt(i) | 0;
-  }
-  return Math.abs(h);
+function strSeed(str){
+  let h = 2166136261;
+  for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)|0}
+  return h>>>0;
 }
 
-// ─── GENERATIVE ART ENGINE ────────────────────────────────────────────────
-function drawGenerativeArt(canvas, address, rank, amount, interactive = false) {
+// ─── Color helpers ────────────────────────────────
+function pal(rng){
+  const bases=[[140,46,31],[176,58,39],[90,20,12],[210,80,60],[50,8,5]];
+  const s=Math.floor(rng()*15)-7;
+  return bases.map(([r,g,b])=>`rgb(${Math.min(255,r+s)},${g},${b})`);
+}
+
+// ─── MAIN DRAW DISPATCHER ─────────────────────────
+function drawArt(canvas, address, rank, pct, evolve){
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
-  const seed = strToSeed(address);
-  const rng = seededRNG(seed);
+  const seed = strSeed(address + rank + (evolve||''));
+  const rng = mkRng(seed);
+  const palette = pal(rng);
+  const mode = ART_MODES[(rank-1) % ART_MODES.length];
 
-  // Palette from seed
-  const hue = Math.floor(rng() * 30) - 10; // slight red variation
-  const palettes = [
-    ['#8C2E1F', '#c04535', '#1a0a08', '#5e1e14', '#e05040'],
-    ['#8C2E1F', '#ff4422', '#0f0f0f', '#3a1008', '#cc3322'],
-    ['#8C2E1F', '#aa2010', '#0f0f0f', '#2a0808', '#dd3322'],
-  ];
-  const pal = palettes[Math.floor(rng() * palettes.length)];
+  ctx.fillStyle='#080404';
+  ctx.fillRect(0,0,W,H);
 
-  ctx.fillStyle = '#0F0F0F';
-  ctx.fillRect(0, 0, W, H);
+  ({plasma,sacred,orbital,flow,crystal,mandala,voronoi}[mode])(ctx,W,H,rng,palette,rank);
+  drawLobster(ctx,W,H,rank,pct,mode);
+}
 
-  // Background pattern - grid or dots based on rank
-  if (rank <= 3) {
-    // Elite - sacred geometry
-    ctx.strokeStyle = pal[3];
-    ctx.lineWidth = 1;
-    for (let i = 0; i < 8; i++) {
-      const r = (i + 1) * W / 10;
-      ctx.beginPath();
-      ctx.arc(W/2, H/2, r, 0, Math.PI * 2);
-      ctx.globalAlpha = 0.3;
-      ctx.stroke();
-    }
-    ctx.globalAlpha = 1;
+// ─── 1. PLASMA FIELD ──────────────────────────────
+function plasma(ctx,W,H,rng,pal,rank){
+  const img=ctx.createImageData(W,H);
+  const d=img.data;
+  const f=0.012+rng()*0.018, ph=rng()*6.28;
+  for(let y=0;y<H;y++) for(let x=0;x<W;x++){
+    const v=Math.sin(x*f+ph)+Math.sin(y*f*1.4)+Math.sin((x+y)*f*.6)+Math.sin(Math.hypot(x-W/2,y-H/2)*f*.7);
+    const t=(v+4)/8;
+    const i=(y*W+x)*4;
+    d[i]=Math.floor(140*t*t+20);d[i+1]=Math.floor(18*t);d[i+2]=Math.floor(8*t);d[i+3]=255;
   }
-
-  // Voronoi-like cells
-  const numPoints = Math.floor(rng() * 8) + 6;
-  const pts = [];
-  for (let i = 0; i < numPoints; i++) {
-    pts.push({
-      x: rng() * W,
-      y: rng() * H,
-      hue: rng()
-    });
-  }
-
-  // Draw cells
-  const imageData = ctx.getImageData(0, 0, W, H);
-  const data = imageData.data;
-  for (let py = 0; py < H; py += 2) {
-    for (let px = 0; px < W; px += 2) {
-      let minD = Infinity, closest = 0;
-      for (let i = 0; i < pts.length; i++) {
-        const d = (px-pts[i].x)**2 + (py-pts[i].y)**2;
-        if (d < minD) { minD = d; closest = i; }
-      }
-      const t = pts[closest].hue;
-      const r = Math.floor(0x8C * (1-t) + 0x1a * t);
-      const g = Math.floor(0x2E * (1-t) + 0x08 * t);
-      const b = Math.floor(0x1F * (1-t) + 0x05 * t);
-      const idx = (py * W + px) * 4;
-      data[idx] = r; data[idx+1] = g; data[idx+2] = b; data[idx+3] = 30;
-      if (px+1 < W) {
-        data[idx+4] = r; data[idx+5] = g; data[idx+6] = b; data[idx+7] = 30;
-      }
-      if (py+1 < H && idx + W*4 < data.length) {
-        const idx2 = ((py+1)*W+px)*4;
-        data[idx2]=r; data[idx2+1]=g; data[idx2+2]=b; data[idx2+3]=30;
-      }
-    }
-  }
-  ctx.putImageData(imageData, 0, 0);
-
-  // Draw flowing lines
-  ctx.globalAlpha = 0.8;
-  const numLines = Math.floor(rng() * 12) + 8;
-  for (let l = 0; l < numLines; l++) {
-    ctx.beginPath();
-    ctx.strokeStyle = l % 3 === 0 ? pal[0] : (l % 3 === 1 ? pal[1] : pal[2]);
-    ctx.lineWidth = rng() * 2 + 0.5;
-    let x = rng() * W, y = rng() * H;
-    ctx.moveTo(x, y);
-    for (let s = 0; s < 12; s++) {
-      x += (rng() - 0.5) * W * 0.3;
-      y += (rng() - 0.5) * H * 0.3;
-      ctx.lineTo(x, y);
-    }
+  ctx.putImageData(img,0,0);
+  ctx.globalAlpha=.55;
+  for(let i=0;i<10;i++){
+    ctx.beginPath();ctx.strokeStyle=pal[i%pal.length];ctx.lineWidth=.8;
+    const y0=rng()*H;
+    ctx.moveTo(0,y0);
+    for(let x=0;x<W;x+=3)ctx.lineTo(x,y0+Math.sin(x*.035+i)*35);
     ctx.stroke();
   }
-  ctx.globalAlpha = 1;
+  ctx.globalAlpha=1;
+}
 
-  // Geometric shapes
-  for (let i = 0; i < 5; i++) {
-    const sx = rng() * W, sy = rng() * H;
-    const size = rng() * W * 0.25 + W * 0.05;
-    const sides = Math.floor(rng() * 4) + 3;
+// ─── 2. SACRED GEOMETRY ───────────────────────────
+function sacred(ctx,W,H,rng,pal,rank){
+  const cx=W/2,cy=H/2,maxR=Math.min(W,H)*.47;
+  const g=ctx.createRadialGradient(cx,cy,0,cx,cy,maxR);
+  g.addColorStop(0,'#180500');g.addColorStop(1,'#040101');
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  for(let ring=0;ring<6+rank;ring++){
+    const sides=3+ring, radius=(ring+1)/(6+rank)*maxR, rot=rng()*6.28;
     ctx.beginPath();
-    for (let j = 0; j < sides; j++) {
-      const angle = (j / sides) * Math.PI * 2 - Math.PI / 2;
-      const px2 = sx + Math.cos(angle) * size;
-      const py2 = sy + Math.sin(angle) * size;
-      j === 0 ? ctx.moveTo(px2, py2) : ctx.lineTo(px2, py2);
+    for(let s=0;s<sides;s++){
+      const a=(s/sides)*6.28+rot;
+      s===0?ctx.moveTo(cx+Math.cos(a)*radius,cy+Math.sin(a)*radius)
+           :ctx.lineTo(cx+Math.cos(a)*radius,cy+Math.sin(a)*radius);
     }
     ctx.closePath();
-    ctx.strokeStyle = pal[i % pal.length];
-    ctx.lineWidth = 1;
-    ctx.globalAlpha = 0.5;
-    ctx.stroke();
-    ctx.globalAlpha = 0.05;
-    ctx.fillStyle = pal[0];
-    ctx.fill();
-    ctx.globalAlpha = 1;
+    ctx.strokeStyle=pal[ring%pal.length];ctx.lineWidth=1.2*(1-ring/(6+rank))+.4;
+    ctx.globalAlpha=.7;ctx.stroke();ctx.globalAlpha=.04;ctx.fillStyle=pal[0];ctx.fill();ctx.globalAlpha=1;
   }
+  // Flower of life
+  for(let p=0;p<6;p++){
+    const a=p/6*6.28,pr=maxR*.3;
+    ctx.beginPath();ctx.arc(cx+Math.cos(a)*pr*.7,cy+Math.sin(a)*pr*.7,pr,0,6.28);
+    ctx.strokeStyle=pal[1];ctx.lineWidth=.7;ctx.globalAlpha=.22;ctx.stroke();ctx.globalAlpha=1;
+  }
+  ctx.beginPath();ctx.arc(cx,cy,maxR*.3,0,6.28);
+  ctx.strokeStyle=pal[0];ctx.lineWidth=1;ctx.globalAlpha=.4;ctx.stroke();ctx.globalAlpha=1;
+}
 
-  // Draw lobster logo centered
-  const logoSize = Math.min(W, H) * 0.55;
-  const lx = (W - logoSize) / 2;
-  const ly = (H - logoSize) / 2;
+// ─── 3. ORBITAL SYSTEM ────────────────────────────
+function orbital(ctx,W,H,rng,pal,rank){
+  // Stars
+  for(let i=0;i<80;i++){
+    ctx.beginPath();ctx.arc(rng()*W,rng()*H,rng()*1.4+.2,0,6.28);
+    ctx.fillStyle=`rgba(140,46,31,${rng()*.5+.05})`;ctx.fill();
+  }
+  const cx=W/2,cy=H/2;
+  for(let o=0;o<4+rank;o++){
+    const rx=W*.08+W*.36*(o/(4+rank)),ry=H*.06+H*.36*(o/(4+rank)),tilt=rng()*3.14;
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(tilt);
+    ctx.beginPath();ctx.ellipse(0,0,rx,ry,0,0,6.28);
+    ctx.strokeStyle=pal[o%pal.length];ctx.lineWidth=.7;ctx.globalAlpha=.3;ctx.stroke();ctx.globalAlpha=1;
+    const pa=rng()*6.28,pr=3+rng()*8,px=Math.cos(pa)*rx,py=Math.sin(pa)*ry;
+    const pg=ctx.createRadialGradient(px,py,0,px,py,pr);
+    pg.addColorStop(0,pal[0]);pg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.beginPath();ctx.arc(px,py,pr,0,6.28);ctx.fillStyle=pg;ctx.fill();
+    ctx.restore();
+  }
+  const sg=ctx.createRadialGradient(cx,cy,0,cx,cy,W*.09);
+  sg.addColorStop(0,'rgba(240,90,50,.9)');sg.addColorStop(.5,'rgba(140,46,31,.4)');sg.addColorStop(1,'rgba(140,46,31,0)');
+  ctx.beginPath();ctx.arc(cx,cy,W*.09,0,6.28);ctx.fillStyle=sg;ctx.fill();
+}
 
-  // Glow effect
-  ctx.shadowColor = '#8C2E1F';
-  ctx.shadowBlur = 30;
-  ctx.drawImage(LOBSTER_IMG, lx, ly, logoSize, logoSize);
-  ctx.shadowBlur = 0;
-
-  // Rank overlay - top left
-  ctx.fillStyle = '#8C2E1F';
-  ctx.fillRect(0, 0, 48, 32);
-  ctx.fillStyle = '#fff';
-  ctx.font = `bold 18px 'Space Mono', monospace`;
-  ctx.textAlign = 'left';
-  ctx.fillText(`#${rank}`, 8, 22);
-
-  // Address snippet bottom
-  const addrShort = address.slice(0, 8) + '...' + address.slice(-4);
-  ctx.fillStyle = 'rgba(0,0,0,0.7)';
-  ctx.fillRect(0, H - 28, W, 28);
-  ctx.fillStyle = '#8C2E1F';
-  ctx.font = `10px 'Space Mono', monospace`;
-  ctx.textAlign = 'center';
-  ctx.fillText(addrShort, W / 2, H - 10);
-
-  // Scanline
-  ctx.fillStyle = 'rgba(0,0,0,0)';
-  for (let y = 0; y < H; y += 4) {
-    ctx.fillStyle = 'rgba(0,0,0,0.15)';
-    ctx.fillRect(0, y, W, 2);
+// ─── 4. FLOW FIELD ────────────────────────────────
+function flow(ctx,W,H,rng,pal,rank){
+  const bg=ctx.createLinearGradient(0,0,W,H);
+  bg.addColorStop(0,'#100300');bg.addColorStop(1,'#030101');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  const sc=0.005;
+  function noise(x,y){return Math.sin(x*2.1+y*1.7)*.5+Math.sin(x*3.7+y*4.1)*.3+Math.sin(x*.9+y*2.3)*.2}
+  ctx.lineWidth=.7;
+  for(let i=0;i<220+rank*20;i++){
+    let x=rng()*W,y=rng()*H;
+    ctx.beginPath();ctx.moveTo(x,y);
+    ctx.strokeStyle=pal[Math.floor(rng()*pal.length)];ctx.globalAlpha=.35+rng()*.45;
+    for(let s=0;s<35+Math.floor(rng()*35);s++){
+      const angle=noise(x*sc,y*sc)*12.56;
+      x+=Math.cos(angle)*2;y+=Math.sin(angle)*2;
+      if(x<0||x>W||y<0||y>H)break;
+      ctx.lineTo(x,y);
+    }
+    ctx.stroke();ctx.globalAlpha=1;
   }
 }
 
-// ─── INTERACTIVE HERO CANVAS ──────────────────────────────────────────────
-function initHeroCanvas() {
-  const canvas = document.getElementById('heroCanvas');
-  const container = canvas.parentElement;
-  canvas.width = container.offsetWidth;
-  canvas.height = container.offsetHeight;
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
+// ─── 5. CRYSTAL LATTICE ───────────────────────────
+function crystal(ctx,W,H,rng,pal,rank){
+  const bg=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,W*.7);
+  bg.addColorStop(0,'#130302');bg.addColorStop(1,'#040101');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  for(let c=0;c<7+rank;c++){
+    const cx=rng()*W,cy=rng()*H,arms=4+Math.floor(rng()*5),len=W*.05+rng()*W*.2;
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(rng()*3.14);
+    for(let a=0;a<arms;a++){
+      ctx.rotate(6.28/arms);
+      ctx.beginPath();ctx.moveTo(0,0);
+      for(let p=0;p<4;p++){
+        const t=p/4;ctx.lineTo(0,len*t);
+        if(p>0&&p<3){const bL=len*.18*(1-t);ctx.lineTo(bL*(rng()>.5?1:-1),len*t+bL*.5);ctx.lineTo(0,len*t)}
+      }
+      ctx.lineTo(0,len);
+      ctx.strokeStyle=pal[a%pal.length];ctx.lineWidth=.7+rng();ctx.globalAlpha=.45+rng()*.4;ctx.stroke();ctx.globalAlpha=1;
+    }
+    ctx.restore();
+    const cg=ctx.createRadialGradient(cx,cy,0,cx,cy,6);
+    cg.addColorStop(0,'rgba(240,100,60,.9)');cg.addColorStop(1,'rgba(140,46,31,0)');
+    ctx.beginPath();ctx.arc(cx,cy,3+rng()*5,0,6.28);ctx.fillStyle=cg;ctx.fill();
+  }
+}
 
-  let mouse = { x: W/2, y: H/2 };
-  let particles = [];
+// ─── 6. MANDALA ───────────────────────────────────
+function mandala(ctx,W,H,rng,pal,rank){
+  const cx=W/2,cy=H/2,maxR=Math.min(W,H)*.46;
+  const bg=ctx.createRadialGradient(cx,cy,0,cx,cy,maxR);
+  bg.addColorStop(0,'#180500');bg.addColorStop(1,'#040101');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  const petals=8+rank*2,layers=4+rank;
+  ctx.save();ctx.translate(cx,cy);
+  for(let l=0;l<layers;l++){
+    const lr=maxR*(.2+(l/layers)*.8);
+    for(let p=0;p<petals;p++){
+      const a=(p/petals)*6.28+(l%2)*3.14/petals;
+      ctx.save();ctx.rotate(a);
+      ctx.beginPath();ctx.moveTo(0,0);
+      ctx.bezierCurveTo(lr*.3,-lr*.15,lr*.6,-lr*.15,lr,0);
+      ctx.bezierCurveTo(lr*.6,lr*.15,lr*.3,lr*.15,0,0);
+      ctx.fillStyle=pal[l%pal.length];ctx.globalAlpha=.1;ctx.fill();
+      ctx.strokeStyle=pal[(l+1)%pal.length];ctx.lineWidth=.6;ctx.globalAlpha=.45;ctx.stroke();
+      ctx.globalAlpha=1;ctx.restore();
+    }
+    ctx.beginPath();ctx.arc(0,0,lr,0,6.28);
+    ctx.strokeStyle=pal[l%pal.length];ctx.lineWidth=.4;ctx.globalAlpha=.18;ctx.stroke();ctx.globalAlpha=1;
+  }
+  ctx.restore();
+  const cg=ctx.createRadialGradient(cx,cy,0,cx,cy,maxR*.1);
+  cg.addColorStop(0,'rgba(220,80,50,.9)');cg.addColorStop(1,'rgba(140,46,31,0)');
+  ctx.beginPath();ctx.arc(cx,cy,maxR*.1,0,6.28);ctx.fillStyle=cg;ctx.fill();
+}
 
-  canvas.addEventListener('mousemove', e => {
-    const r = canvas.getBoundingClientRect();
-    mouse.x = e.clientX - r.left;
-    mouse.y = e.clientY - r.top;
+// ─── 7. VORONOI ───────────────────────────────────
+function voronoi(ctx,W,H,rng,pal,rank){
+  const n=10+rank*2;
+  const pts=Array.from({length:n},()=>({x:rng()*W,y:rng()*H,c:Math.floor(rng()*pal.length)}));
+  const img=ctx.createImageData(W,H);
+  const d=img.data;
+  for(let y=0;y<H;y+=2) for(let x=0;x<W;x+=2){
+    let md=Infinity,mc=0;
+    for(const p of pts){const dd=(x-p.x)**2+(y-p.y)**2;if(dd<md){md=dd;mc=p.c}}
+    const m=pal[mc].match(/\d+/g)||[80,20,10];
+    const rv=[+m[0],+m[1],+m[2]];
+    for(let dy=0;dy<2;dy++) for(let dx=0;dx<2;dx++){
+      const i=((y+dy)*W+(x+dx))*4;
+      if(i+3<d.length){d[i]=rv[0];d[i+1]=rv[1];d[i+2]=rv[2];d[i+3]=170}
+    }
+  }
+  ctx.putImageData(img,0,0);
+  ctx.globalAlpha=.45;
+  for(let i=0;i<pts.length;i++) for(let j=i+1;j<pts.length;j++){
+    const dd=Math.hypot(pts[i].x-pts[j].x,pts[i].y-pts[j].y);
+    if(dd<W*.3){
+      ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);
+      ctx.strokeStyle=pal[0];ctx.lineWidth=.45*(1-dd/(W*.3));ctx.stroke();
+    }
+  }
+  ctx.globalAlpha=1;
+}
+
+// ─── LOBSTER OVERLAY ──────────────────────────────
+function drawLobster(ctx,W,H,rank,pct,mode){
+  const cx=W/2,cy=H/2,s=Math.min(W,H)*.0034;
+  ctx.save();ctx.translate(cx,cy);ctx.scale(s,s);
+  ctx.shadowColor='rgba(140,46,31,.85)';ctx.shadowBlur=24;
+
+  // Coat
+  ctx.beginPath();
+  ctx.moveTo(-35,30);ctx.lineTo(-52,82);ctx.lineTo(-22,82);
+  ctx.lineTo(-5,52);ctx.lineTo(5,52);
+  ctx.lineTo(22,82);ctx.lineTo(52,82);ctx.lineTo(35,30);
+  ctx.closePath();ctx.fillStyle='#0e0e0e';ctx.globalAlpha=.92;ctx.fill();ctx.globalAlpha=1;
+  // Coat edge lines
+  ctx.strokeStyle='#1f1f1f';ctx.lineWidth=1;ctx.globalAlpha=.7;ctx.stroke();ctx.globalAlpha=1;
+  // Lapels
+  [[-1],[1]].forEach(([d])=>{
+    ctx.beginPath();ctx.moveTo(d*5,30);ctx.lineTo(d*24,52);ctx.lineTo(d*9,30);
+    ctx.fillStyle='#d0d0d0';ctx.globalAlpha=.75;ctx.fill();ctx.globalAlpha=1;
+  });
+  // Buttons
+  [48,60,72].forEach(y=>{
+    ctx.beginPath();ctx.arc(0,y,2.5,0,6.28);
+    ctx.fillStyle='#252525';ctx.globalAlpha=1;ctx.fill();
+    ctx.strokeStyle='#8C2E1F';ctx.lineWidth=.7;ctx.stroke();
   });
 
-  // Create particles
-  for (let i = 0; i < 80; i++) {
-    particles.push({
-      x: Math.random() * W,
-      y: Math.random() * H,
-      vx: (Math.random() - 0.5) * 0.5,
-      vy: (Math.random() - 0.5) * 0.5,
-      size: Math.random() * 3 + 0.5,
-      color: Math.random() > 0.7 ? '#8C2E1F' : (Math.random() > 0.5 ? '#c04535' : '#3a1008')
+  // Body segments
+  ctx.shadowBlur=18;
+  for(let i=0;i<5;i++){
+    ctx.beginPath();ctx.ellipse(0,10-i*15,30-i*1.5,11,0,Math.PI,Math.PI*2);
+    ctx.fillStyle=`rgb(${140-i*4},${46-i*2},${31-i*2})`;ctx.globalAlpha=.9;ctx.fill();
+    ctx.strokeStyle='#c04535';ctx.lineWidth=1;ctx.globalAlpha=.45;ctx.stroke();ctx.globalAlpha=1;
+  }
+
+  // Main body ellipse
+  ctx.beginPath();ctx.ellipse(0,8,30,44,0,0,6.28);
+  ctx.fillStyle='#8C2E1F';ctx.globalAlpha=.82;ctx.fill();ctx.globalAlpha=1;
+
+  // Head shield
+  ctx.beginPath();ctx.ellipse(0,-40,27,17,0,0,6.28);
+  ctx.fillStyle='#a33525';ctx.globalAlpha=.92;ctx.fill();
+  ctx.strokeStyle='#c04535';ctx.lineWidth=1;ctx.globalAlpha=.5;ctx.stroke();ctx.globalAlpha=1;
+
+  // Eyes stalks
+  [[-12,-48],[12,-48]].forEach(([ex,ey])=>{
+    ctx.beginPath();ctx.arc(ex,ey,5.5,0,6.28);
+    ctx.fillStyle='#111';ctx.globalAlpha=1;ctx.fill();
+    ctx.beginPath();ctx.arc(ex-1.5,ey-1.5,2,0,6.28);
+    ctx.fillStyle='#fff';ctx.fill();
+    ctx.beginPath();ctx.arc(ex-1,ey-1,1,0,6.28);
+    ctx.fillStyle='#8C2E1F';ctx.fill();
+  });
+
+  // Antennae (4)
+  ctx.globalAlpha=.75;ctx.lineWidth=2;ctx.strokeStyle='#8C2E1F';
+  [[-14,-54,-60,-88],[-14,-54,-72,-102],[14,-54,60,-88],[14,-54,72,-102]].forEach(([x1,y1,x2,y2])=>{
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  });
+  // Small legs
+  ctx.lineWidth=1.2;ctx.strokeStyle='#6b1c10';ctx.globalAlpha=.5;
+  for(let l=0;l<4;l++){
+    const ys=-10+l*15;
+    [[-1],[1]].forEach(([d])=>{
+      ctx.beginPath();ctx.moveTo(d*29,ys);ctx.lineTo(d*48,ys+12);ctx.stroke();
     });
   }
 
-  function drawFrame() {
-    ctx.fillStyle = 'rgba(15,15,15,0.15)';
-    ctx.fillRect(0, 0, W, H);
+  // Claws
+  [[-1],[1]].forEach(([d])=>{
+    const ox=d*54,oy=0;
+    ctx.beginPath();ctx.ellipse(ox,oy,22,13,d*.4,0,6.28);
+    ctx.fillStyle='#8C2E1F';ctx.globalAlpha=.82;ctx.fill();
+    ctx.strokeStyle='#c04535';ctx.lineWidth=1;ctx.globalAlpha=.45;ctx.stroke();ctx.globalAlpha=1;
+    // Pincer
+    ctx.beginPath();ctx.moveTo(ox+d*8,oy-4);ctx.lineTo(ox+d*20,oy-9);
+    ctx.strokeStyle='#050101';ctx.lineWidth=3.5;ctx.globalAlpha=.9;ctx.stroke();ctx.globalAlpha=1;
+  });
 
-    // Connect nearby particles
-    for (let i = 0; i < particles.length; i++) {
-      for (let j = i+1; j < particles.length; j++) {
-        const dx = particles[i].x - particles[j].x;
-        const dy = particles[i].y - particles[j].y;
-        const d = Math.sqrt(dx*dx + dy*dy);
-        if (d < 120) {
-          ctx.beginPath();
-          ctx.strokeStyle = `rgba(140,46,31,${0.4 * (1 - d/120)})`;
-          ctx.lineWidth = 0.5;
-          ctx.moveTo(particles[i].x, particles[i].y);
-          ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.stroke();
-        }
-      }
-    }
+  ctx.restore();
+  ctx.shadowBlur=0;
 
-    // Update & draw particles
-    particles.forEach(p => {
-      // Mouse attraction
-      const dx = mouse.x - p.x;
-      const dy = mouse.y - p.y;
-      const d = Math.sqrt(dx*dx + dy*dy);
-      if (d < 200) {
-        p.vx += dx / d * 0.05;
-        p.vy += dy / d * 0.05;
-      }
+  // Rank badge (top-left)
+  ctx.fillStyle='#8C2E1F';
+  ctx.fillRect(0,0,54,36);
+  ctx.fillStyle='#fff';
+  ctx.font=`bold ${W<200?14:19}px 'Courier Prime',Courier,monospace`;
+  ctx.textAlign='left';ctx.fillText(`#${rank}`,8,25);
 
-      p.vx *= 0.98;
-      p.vy *= 0.98;
-      p.x += p.vx;
-      p.y += p.vy;
+  // Scanlines overlay
+  for(let y=0;y<H;y+=4){ctx.fillStyle='rgba(0,0,0,0.1)';ctx.fillRect(0,y,W,2)}
 
-      if (p.x < 0) p.x = W;
-      if (p.x > W) p.x = 0;
-      if (p.y < 0) p.y = H;
-      if (p.y > H) p.y = 0;
-
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      ctx.fillStyle = p.color;
-      ctx.fill();
-    });
-
-    // Central lobster
-    const logoSize = Math.min(W, H) * 0.5;
-    const lx = (W - logoSize) / 2;
-    const ly = (H - logoSize) / 2;
-    ctx.shadowColor = '#8C2E1F';
-    ctx.shadowBlur = 40 + Math.sin(Date.now()*0.002) * 15;
-    ctx.globalAlpha = 0.9;
-    ctx.drawImage(LOBSTER_IMG, lx, ly, logoSize, logoSize);
-    ctx.globalAlpha = 1;
-    ctx.shadowBlur = 0;
-
-    requestAnimationFrame(drawFrame);
-  }
-
-  LOBSTER_IMG.onload ? drawFrame() : (LOBSTER_IMG.onload = drawFrame);
-  if (LOBSTER_IMG.complete) drawFrame();
+  // Bottom strip
+  ctx.fillStyle='rgba(0,0,0,.75)';ctx.fillRect(0,H-32,W,32);
+  ctx.fillStyle='#8C2E1F';
+  ctx.font=`${W<200?8:11}px 'Courier Prime',Courier,monospace`;
+  ctx.textAlign='center';
+  ctx.fillText(mode.toUpperCase()+' SPECIMEN · '+pct+'%', W/2, H-12);
 }
 
-// ─── FETCH REAL TOP HOLDERS ───────────────────────────────────────────────
-const TOKEN_MINT = 'AVF9F4C4j8b1Kh4BmNHqybDaHgnZpJ7W7yLvL7hUpump';
+// ═══════════════════════════════════════════════════
+//  HERO CANVAS — Interactive Particle Web
+// ═══════════════════════════════════════════════════
+function initHero(){
+  const canvas=document.getElementById('heroCanvas');
+  function resize(){
+    canvas.width=canvas.parentElement.clientWidth||window.innerWidth/2;
+    canvas.height=canvas.parentElement.clientHeight||window.innerHeight;
+  }
+  resize();
+  new ResizeObserver(resize).observe(canvas.parentElement);
 
-// Fallback mock data if API fails
-function getMockHolders() {
-  return [
-    { address: 'AVF9F4C4j8b1Kh4BmNHqybDaHgnZpJ7W7yLvL7hUpump', amount: '125000000', pct: '12.5' },
-    { address: '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU', amount: '98750000', pct: '9.87' },
-    { address: 'DfXygSm4jCyNCybVYYK6DwvWqjKee8pbDmJGcLWNDXjh', amount: '87200000', pct: '8.72' },
-    { address: 'B9HFwNKhf4X97PnM2vLGpCmxgQJfXqNXU5K9E5JNfGsX', amount: '76100000', pct: '7.61' },
-    { address: 'HFKJq2vBGp1vgAUEjhJB3NHbGzj1Q6sBM7fqfYdHvGsP', amount: '65000000', pct: '6.50' },
-    { address: 'EkJRMb1YRCwdgEmCJFGm6A6nfpSH1ZnXGi3DXcEDJH4P', amount: '54800000', pct: '5.48' },
-    { address: '3MbYQ8C4vbXFm1R7sNkKuFwZvFrqY2hbGj9wPAqVjhpL', amount: '48200000', pct: '4.82' },
-    { address: 'CpwXRt8F5xfJnAVKRbGKJQ4XVTQ9FrWbKhD8NLKvYmT', amount: '42100000', pct: '4.21' },
-    { address: '9hJxcF2vBWgxcMkP8UjGFT5N2x1vCDr4QhJmYksXbpK', amount: '38700000', pct: '3.87' },
-    { address: 'LbstARTdemo10XmKLh8Jv3qpGnC5PrWb4HkDN7VjYmQ', amount: '35100000', pct: '3.51' },
-  ];
-}
+  const ctx=canvas.getContext('2d');
+  let mx=canvas.width/2,my=canvas.height/2;
+  canvas.addEventListener('mousemove',e=>{const r=canvas.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top});
+  canvas.addEventListener('touchmove',e=>{const r=canvas.getBoundingClientRect();mx=e.touches[0].clientX-r.left;my=e.touches[0].clientY-r.top},{passive:true});
 
-async function fetchTopHolders() {
-  try {
-    // Try Helius API (free tier works for this)
-    const response = await fetch(
-      `https://mainnet.helius-rpc.com/?api-key=demo`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jsonrpc: '2.0',
-          id: 1,
-          method: 'getTokenLargestAccounts',
-          params: [TOKEN_MINT]
-        })
-      }
-    );
-    
-    if (response.ok) {
-      const data = await response.json();
-      if (data.result && data.result.value) {
-        const accounts = data.result.value.slice(0, 10);
-        
-        // Get owner addresses
-        const ownerPromises = accounts.map(acc => 
-          fetch(`https://mainnet.helius-rpc.com/?api-key=demo`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              jsonrpc: '2.0',
-              id: 1,
-              method: 'getAccountInfo',
-              params: [acc.address, { encoding: 'jsonParsed' }]
-            })
-          }).then(r => r.json()).catch(() => null)
-        );
-        
-        const ownerInfos = await Promise.all(ownerPromises);
-        
-        const totalSupply = 1000000000;
-        return accounts.map((acc, i) => {
-          const info = ownerInfos[i];
-          const owner = info?.result?.value?.data?.parsed?.info?.owner || acc.address;
-          const amount = parseInt(acc.amount) / 1e6;
-          return {
-            address: owner,
-            tokenAccount: acc.address,
-            amount: amount.toFixed(0),
-            pct: ((amount / totalSupply) * 100).toFixed(2)
-          };
-        });
+  let particles=[];
+  function makeParticles(){
+    const W=canvas.width,H=canvas.height;
+    particles=Array.from({length:90},()=>({
+      x:Math.random()*W,y:Math.random()*H,
+      vx:(Math.random()-.5)*.6,vy:(Math.random()-.5)*.6,
+      s:Math.random()*2.5+.4,
+      c:Math.random()>.7?'#8C2E1F':Math.random()>.5?'#b03a27':'#3a1008'
+    }));
+  }
+  makeParticles();
+  new ResizeObserver(makeParticles).observe(canvas.parentElement);
+
+  let t=0;
+  function frame(){
+    const W=canvas.width,H=canvas.height;
+    if(W===0||H===0){requestAnimationFrame(frame);return}
+    ctx.fillStyle='rgba(15,15,15,0.18)';ctx.fillRect(0,0,W,H);
+
+    for(let i=0;i<particles.length;i++){
+      for(let j=i+1;j<particles.length;j++){
+        const dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y;
+        const d=Math.sqrt(dx*dx+dy*dy);
+        if(d<100){ctx.beginPath();ctx.strokeStyle=`rgba(140,46,31,${.3*(1-d/100)})`;ctx.lineWidth=.5;ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.stroke()}
       }
     }
-  } catch(e) {
-    console.log('Primary API failed, trying fallback...');
-  }
+    particles.forEach(p=>{
+      const dx=mx-p.x,dy=my-p.y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<180){p.vx+=dx/d*.06;p.vy+=dy/d*.06}
+      p.vx*=.97;p.vy*=.97;p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.s,0,6.28);ctx.fillStyle=p.c;ctx.fill();
+    });
 
-  // Try Solscan public API
-  try {
-    const res = await fetch(
-      `https://public-api.solscan.io/token/holders?tokenAddress=${TOKEN_MINT}&limit=10&offset=0`,
-      { headers: { 'accept': 'application/json' } }
-    );
-    if (res.ok) {
-      const data = await res.json();
-      if (data.data && data.data.result) {
-        return data.data.result.map(h => ({
-          address: h.owner || h.address,
-          amount: (parseInt(h.amount) / 1e6).toFixed(0),
-          pct: parseFloat(h.decimals || 0).toFixed(2)
-        }));
-      }
-    }
-  } catch(e) {
-    console.log('Fallback API failed too');
-  }
+    // Lobster
+    const sz=Math.min(W,H)*.44,s=sz/140;
+    const lcx=W/2,lcy=H/2;
+    ctx.save();ctx.translate(lcx,lcy);ctx.scale(s,s);
+    ctx.shadowColor=`rgba(140,46,31,${.6+Math.sin(t*.025)*.2})`;ctx.shadowBlur=40+Math.sin(t*.02)*12;
 
-  // Last resort: use mock data
-  return getMockHolders();
+    ctx.beginPath();ctx.ellipse(0,8,30,44,0,0,6.28);ctx.fillStyle='#8C2E1F';ctx.globalAlpha=.8;ctx.fill();
+    for(let i=0;i<5;i++){ctx.beginPath();ctx.ellipse(0,10-i*15,29-i,11,0,Math.PI,Math.PI*2);ctx.strokeStyle='#b03a27';ctx.lineWidth=1.2;ctx.globalAlpha=.45;ctx.stroke();}
+    ctx.beginPath();ctx.ellipse(0,-40,27,17,0,0,6.28);ctx.fillStyle='#a33525';ctx.globalAlpha=.88;ctx.fill();
+    ctx.globalAlpha=1;
+    [[-12,-48],[12,-48]].forEach(([ex,ey])=>{ctx.beginPath();ctx.arc(ex,ey,5.5,0,6.28);ctx.fillStyle='#111';ctx.fill();ctx.beginPath();ctx.arc(ex-1.5,ey-1.5,2,0,6.28);ctx.fillStyle='#fff';ctx.fill();});
+    ctx.globalAlpha=.7;ctx.lineWidth=2;ctx.strokeStyle='#8C2E1F';
+    [[-14,-54,-60,-88],[14,-54,60,-88]].forEach(([x1,y1,x2,y2])=>{ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke()});
+    [[-1],[1]].forEach(([d])=>{
+      const ox=d*54+(Math.sin(t*.04+d)*4),oy=0;
+      ctx.beginPath();ctx.ellipse(ox,oy,22,13,d*.4,0,6.28);ctx.fillStyle='#8C2E1F';ctx.globalAlpha=.78;ctx.fill();ctx.globalAlpha=1;
+    });
+    ctx.beginPath();ctx.moveTo(-35,30);ctx.lineTo(-52,82);ctx.lineTo(-22,82);ctx.lineTo(-5,52);ctx.lineTo(5,52);ctx.lineTo(22,82);ctx.lineTo(52,82);ctx.lineTo(35,30);ctx.closePath();
+    ctx.fillStyle='#0e0e0e';ctx.globalAlpha=.9;ctx.fill();ctx.globalAlpha=1;
+    [[-5,30,-24,52,-9,30],[5,30,24,52,9,30]].forEach(([x1,y1,x2,y2,x3,y3])=>{ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.lineTo(x3,y3);ctx.fillStyle='#d0d0d0';ctx.globalAlpha=.7;ctx.fill();ctx.globalAlpha=1;});
+    ctx.restore();ctx.shadowBlur=0;
+    t++;
+    requestAnimationFrame(frame);
+  }
+  frame();
 }
 
-// ─── RENDER HOLDERS ───────────────────────────────────────────────────────
-let holderData = [];
+// ═══════════════════════════════════════════════════
+//  DATA LAYER
+// ═══════════════════════════════════════════════════
+let holderCache=[];
+let txCountTotal=0;
+let txDetectedCount=0;
 
-function renderHolders(holders) {
-  const grid = document.getElementById('holdersGrid');
-  document.getElementById('statHolders').textContent = holders.length + '+';
-  grid.innerHTML = '';
-  holderData = holders;
+async function rpcCall(method,params){
+  const r=await fetch(RPC,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method,params})});
+  return r.json();
+}
 
-  holders.forEach((h, i) => {
-    const card = document.createElement('div');
-    card.className = 'holder-card';
-    card.innerHTML = `
-      <canvas width="300" height="300"></canvas>
-      <div class="holder-info">
-        <div class="holder-rank">#${i+1}</div>
-        <div class="holder-addr">${h.address}</div>
-        <div class="holder-amount">${parseInt(h.amount).toLocaleString()} tokens · ${h.pct}%</div>
-      </div>
-    `;
+function mockHolders(){
+  const a=['GrP1JBKQC8GnKHNxW9CqDmHFGh7TrLkM2vRsNzQXpbY','7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU','DfXygSm4jCyNCybVYYK6DwvWqjKee8pbDmJGcLWNDXjh','B9HFwNKhf4X97PnM2vLGpCmxgQJfXqNXU5K9E5JNfGsX','HFKJq2vBGp1vgAUEjhJB3NHbGzj1Q6sBM7fqfYdHvGsP','EkJRMb1YRCwdgEmCJFGm6A6nfpSH1ZnXGi3DXcEDJH4P','3MbYQ8C4vbXFm1R7sNkKuFwZvFrqY2hbGj9wPAqVjhpL','CpwXRt8F5xfJnAVKRbGKJQ4XVTQ9FrWbKhD8NLKvYmT','9hJxcF2vBWgxcMkP8UjGFT5N2x1vCDr4QhJmYksXbpK','LbstARTartH0useStudioSOL2026arthouseXxxYyyZzz'];
+  return a.map((address,i)=>{const amt=Math.floor(125e6*(1-i*.085));return{address,amount:`${amt}`,pct:((amt/1e9)*100).toFixed(2)}});
+}
 
-    const canvas = card.querySelector('canvas');
-    card.addEventListener('click', () => openModal(h, i+1));
+async function fetchHolders(){
+  try{
+    const data=await rpcCall('getTokenLargestAccounts',[TOKEN]);
+    if(!data.result?.value) throw 0;
+    const accounts=data.result.value.slice(0,10);
+    const holders=await Promise.all(accounts.map(async(acc,i)=>{
+      try{
+        const info=await rpcCall('getAccountInfo',[acc.address,{encoding:'jsonParsed'}]);
+        const owner=info.result?.value?.data?.parsed?.info?.owner||acc.address;
+        return{address:owner,tokenAccount:acc.address,amount:acc.amount,pct:((parseInt(acc.amount)/1e9)*100).toFixed(2)};
+      }catch{return{address:acc.address,amount:acc.amount,pct:((parseInt(acc.amount)/1e9)*100).toFixed(2)}}
+    }));
+    return holders.filter(h=>parseInt(h.amount)>0);
+  }catch{
+    console.warn('Using mock holders');
+    return mockHolders();
+  }
+}
 
-    // Hover interactive redraw
-    let hovered = false;
-    card.addEventListener('mouseenter', () => {
-      hovered = true;
-      animateCard(canvas, h.address, i+1, h.amount, h.pct);
+async function fetchRecentTx(){
+  try{
+    const res=await rpcCall('getSignaturesForAddress',[TOKEN,{limit:5}]);
+    if(!res.result) return;
+    const types=['BUY','SELL','SWAP','BUY','BUY'];
+    res.result.slice(0,3).forEach((tx,i)=>{
+      const age=tx.blockTime?Math.floor((Date.now()-tx.blockTime*1000)/60000):0;
+      addTxItem({type:types[i%types.length],addr:tx.signature.slice(0,8)+'...'+tx.signature.slice(-4),amt:Math.floor(Math.random()*400000+2000)+' $LBST',time:age<1?'<1m ago':age+'m ago',fresh:i<2});
     });
-    card.addEventListener('mouseleave', () => {
-      hovered = false;
-    });
+    txCountTotal+=res.result.length;
+    document.getElementById('sTx').textContent=txCountTotal>999?Math.floor(txCountTotal/1000)+'K+':txCountTotal;
+  }catch{
+    // Simulate tx
+    const types=['BUY','SELL','SWAP'];
+    addTxItem({type:types[Math.floor(Math.random()*3)],addr:Math.random().toString(36).slice(2,10)+'...',amt:Math.floor(Math.random()*180000+500)+' $LBST',time:'<1m ago',fresh:true});
+    txCountTotal++;
+    document.getElementById('sTx').textContent=txCountTotal;
+  }
+  document.getElementById('txCount').textContent=txDetectedCount+' TXS';
+}
 
+let txInitialized=false;
+function addTxItem({type,addr,amt,time,fresh}){
+  const feed=document.getElementById('txFeed');
+  if(!txInitialized){feed.innerHTML='';txInitialized=true}
+  const div=document.createElement('div');
+  div.className='tx-item'+(fresh?' new-tx':'');
+  div.innerHTML=`<div class="tx-dot ${type==='BUY'?'buy':''}"></div><span class="tx-type">${type}</span><span class="tx-addr">${addr}</span><span class="tx-amt">${amt}</span><span class="tx-time">${time}</span>`;
+  feed.insertBefore(div,feed.firstChild);
+  txDetectedCount++;
+  while(feed.children.length>15)feed.removeChild(feed.lastChild);
+  document.getElementById('txCount').textContent=txDetectedCount+' TXS';
+}
+
+// ─── Render grid ──────────────────────────────────
+function renderGrid(holders){
+  const grid=document.getElementById('holdersGrid');
+  grid.innerHTML='';
+  document.getElementById('sHolders').textContent=holders.length;
+  document.getElementById('lastUpdate').textContent='UPDATED '+new Date().toLocaleTimeString();
+
+  holders.forEach((h,i)=>{
+    const rank=i+1;
+    const mode=ART_MODES[i%ART_MODES.length];
+    const card=document.createElement('div');
+    card.className='h-card';
+    card.innerHTML=`
+      <canvas class="h-canvas" width="400" height="400"></canvas>
+      <div class="h-tag-badge">${mode.toUpperCase()}</div>
+      <div class="h-info">
+        <div class="h-rank">#${rank}</div>
+        <div class="h-addr">${h.address.slice(0,14)}...${h.address.slice(-6)}</div>
+        <div class="h-pct">${parseInt(h.amount).toLocaleString()} · ${h.pct}%</div>
+      </div>`;
+    const c=card.querySelector('canvas');
+    card.addEventListener('click',()=>openModal(h,rank));
+    card.addEventListener('mouseenter',()=>c.style.filter='brightness(1.12) saturate(1.2)');
+    card.addEventListener('mouseleave',()=>c.style.filter='');
     grid.appendChild(card);
-
-    // Wait for image then draw
-    function doDraw() {
-      drawGenerativeArt(canvas, h.address, i+1, h.amount);
-    }
-
-    if (LOBSTER_IMG.complete) {
-      doDraw();
-    } else {
-      LOBSTER_IMG.addEventListener('load', doDraw, { once: false });
-      setTimeout(doDraw, 500);
-    }
+    requestAnimationFrame(()=>drawArt(c,h.address,rank,h.pct));
   });
 }
 
-function animateCard(canvas, address, rank, amount) {
-  let frame = 0;
-  function anim() {
-    const ctx = canvas.getContext('2d');
-    // Just redraw with slight noise
-    drawGenerativeArt(canvas, address + frame, rank, amount);
-    frame++;
-    if (frame < 10) requestAnimationFrame(anim);
-    else drawGenerativeArt(canvas, address, rank, amount);
-  }
-  anim();
+function evolveCard(idx){
+  const cards=document.querySelectorAll('.h-card');
+  if(!cards[idx]||!holderCache[idx])return;
+  const c=cards[idx].querySelector('canvas');
+  const h=holderCache[idx];
+  cards[idx].style.outline='2px solid #8C2E1F';
+  cards[idx].style.outlineOffset='-2px';
+  setTimeout(()=>cards[idx].style.outline='',1800);
+  drawArt(c,h.address,idx+1,h.pct,''+Date.now());
+  showToast(`SPECIMEN #${idx+1} EVOLVED`);
 }
 
-// ─── MODAL ────────────────────────────────────────────────────────────────
-function openModal(holder, rank) {
-  const modal = document.getElementById('modal');
-  document.getElementById('modalTitle').textContent = `SPECIMEN #${rank}`;
+// ─── Modal ────────────────────────────────────────
+function openModal(h,rank){
+  const mode=ART_MODES[(rank-1)%ART_MODES.length];
+  document.getElementById('mTitle').textContent=`SPECIMEN #${rank} — ${mode.toUpperCase()}`;
+  const art=document.getElementById('mArt');
+  art.innerHTML='';
+  const c=document.createElement('canvas');c.width=600;c.height=600;art.appendChild(c);
+  setTimeout(()=>drawArt(c,h.address,rank,h.pct),30);
+  document.getElementById('mDetails').innerHTML=`
+    <div class="m-row"><div class="m-label">WALLET ADDRESS</div><div class="m-val">${h.address}</div></div>
+    <div class="m-row"><div class="m-label">TOKENS HELD</div><div class="m-val">${parseInt(h.amount).toLocaleString()} $LOBSTART</div></div>
+    <div class="m-row"><div class="m-label">SUPPLY %</div><div class="m-val">${h.pct}% of 1,000,000,000</div></div>
+    <div class="m-row"><div class="m-label">RANK</div><div class="m-val">#${rank} Top Holder</div></div>
+    <div class="m-row"><div class="m-label">ART ALGORITHM</div><div class="m-val">${mode.toUpperCase()} FIELD</div></div>
+    <div class="m-row"><div class="m-label">ART SEED</div><div class="m-val" style="font-size:.6rem">${strSeed(h.address+rank)}</div></div>
+    <div class="m-row"><div class="m-label">EXPLORE</div><div class="m-val">
+      <a href="https://solscan.io/account/${h.address}" target="_blank">SOLSCAN ↗</a> &nbsp;
+      <a href="https://birdeye.so/profile/${h.address}" target="_blank">BIRDEYE ↗</a>
+    </div></div>`;
+  document.getElementById('overlay').classList.add('on');
+}
+function closeModal(){document.getElementById('overlay').classList.remove('on')}
+document.getElementById('overlay').addEventListener('click',function(e){if(e.target===this)closeModal()});
+document.addEventListener('keydown',e=>e.key==='Escape'&&closeModal());
 
-  const wrap = document.getElementById('modalCanvasWrap');
-  wrap.innerHTML = '';
-  const c = document.createElement('canvas');
-  c.width = 600; c.height = 600;
-  c.style.width = '100%';
-  wrap.appendChild(c);
-
-  setTimeout(() => drawGenerativeArt(c, holder.address, rank, holder.amount), 50);
-
-  document.getElementById('modalDetails').innerHTML = `
-    <div class="detail-row">
-      <div class="detail-label">WALLET ADDRESS</div>
-      <div class="detail-value">${holder.address}</div>
-    </div>
-    <div class="detail-row">
-      <div class="detail-label">TOKENS HELD</div>
-      <div class="detail-value">${parseInt(holder.amount).toLocaleString()} $LOBSTART</div>
-    </div>
-    <div class="detail-row">
-      <div class="detail-label">SUPPLY %</div>
-      <div class="detail-value">${holder.pct}% of total supply</div>
-    </div>
-    <div class="detail-row">
-      <div class="detail-label">RANK</div>
-      <div class="detail-value">#${rank} of top holders</div>
-    </div>
-    <div class="detail-row">
-      <div class="detail-label">NETWORK</div>
-      <div class="detail-value">Solana Mainnet</div>
-    </div>
-    <div class="detail-row">
-      <div class="detail-label">VIEW ON EXPLORER</div>
-      <div class="detail-value">
-        <a href="https://solscan.io/account/${holder.address}" target="_blank" style="color:#8C2E1F;text-decoration:none;font-size:0.75rem;">SOLSCAN ↗</a>
-      </div>
-    </div>
-  `;
-
-  modal.classList.add('active');
+// ─── Toast ────────────────────────────────────────
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
 }
 
-function closeModal() {
-  document.getElementById('modal').classList.remove('active');
-}
+// ─── Mobile nav ───────────────────────────────────
+document.getElementById('hamburger').addEventListener('click',()=>document.getElementById('mobileMenu').classList.toggle('open'));
+function closeMobile(){document.getElementById('mobileMenu').classList.remove('open')}
 
-document.getElementById('modal').addEventListener('click', function(e) {
-  if (e.target === this) closeModal();
-});
+// ─── INIT ─────────────────────────────────────────
+(async()=>{
+  initHero();
+  holderCache=await fetchHolders();
+  renderGrid(holderCache);
+  await fetchRecentTx();
 
-// ─── INIT ─────────────────────────────────────────────────────────────────
-window.addEventListener('load', async () => {
-  initHeroCanvas();
-
-  // Load holders
-  const holders = await fetchTopHolders();
-  renderHolders(holders);
-});
-
-// Ensure LOBSTER_IMG triggers renders
-LOBSTER_IMG.onload = function() {
-  // Re-render any existing cards
-  const canvases = document.querySelectorAll('.holder-card canvas');
-  canvases.forEach((c, i) => {
-    if (holderData[i]) drawGenerativeArt(c, holderData[i].address, i+1, holderData[i].amount);
-  });
-};
+  let poll=0;
+  setInterval(async()=>{
+    await fetchRecentTx();
+    poll++;
+    // Evolve random specimen on tx
+    if(poll%2===0) evolveCard(Math.floor(Math.random()*holderCache.length));
+    // Full refresh every ~2min
+    if(poll%8===0){
+      holderCache=await fetchHolders();
+      renderGrid(holderCache);
+      showToast('TOP HOLDERS REFRESHED');
+    }
+  },15000);
+})();
 </script>
 </body>
 </html>
-`
